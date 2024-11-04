@@ -14,17 +14,23 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import main.MainFrame;
 import net.miginfocom.swing.MigLayout;
 import org.mindrot.jbcrypt.BCrypt;
+import session.UserSession;
 import swing.Button;
 import swing.MyPasswordField;
 import swing.MyTextField;
 
 public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
 
-    public PanelLoginAndRegister() {
+    private JFrame parentFrame;
+
+    public PanelLoginAndRegister(JFrame parentFrame) {
+        this.parentFrame = parentFrame;
         initComponents();
         initRegister();
         initLogin();
@@ -63,14 +69,24 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
                 String email = txtEmail.getText();
                 String password = new String(txtPass.getPassword());
                 try {
-                    registerUser(username, email, password);
-                    JOptionPane.showMessageDialog(null, "Registration successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                } catch (SQLException ex) {
-                    if (ex.getMessage().equals("Email already exists!")) {
-                        JOptionPane.showMessageDialog(null, "This email is already registered!", "Error", JOptionPane.ERROR_MESSAGE);
+                    boolean isRegistered = registerUser(username, email, password);
+                    if (isRegistered) {
+                        JOptionPane.showMessageDialog(null, "Registration successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        // Thiết lập phiên người dùng
+                        UserSession.createSession(username);
+
+                        // Mở MainFrame
+                        MainFrame mainFrame = new MainFrame();
+                        mainFrame.setVisible(true);
+
+                        // Đóng frame hiện tại
+                        parentFrame.dispose();
                     } else {
-                        JOptionPane.showMessageDialog(null, "Registration failed! Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "This email is already registered!", "Error", JOptionPane.ERROR_MESSAGE);
                     }
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(null, "Registration failed! Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
                 }
             }
         });
@@ -108,9 +124,18 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
                 String email = txtEmail.getText();
                 String password = new String(txtPass.getPassword());
                 try {
-                    boolean loggedIn = loginUser(email, password); // Gọi phương thức đăng nhập
-                    if (loggedIn) {
+                    String username = loginUser(email, password); // Gọi phương thức đăng nhập
+                    if (username != null) {
                         JOptionPane.showMessageDialog(null, "Login Successful!");
+                        // Thiết lập phiên người dùng
+                        UserSession.createSession(username);
+
+                        // Mở MainFrame
+                        MainFrame mainFrame = new MainFrame();
+                        mainFrame.setVisible(true);
+
+                        // Đóng frame hiện tại
+                        parentFrame.dispose();
                     } else {
                         JOptionPane.showMessageDialog(null, "Invalid email or password.");
                     }
@@ -133,10 +158,11 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
         }
     }
 
-    public void registerUser(String username, String email, String password) throws SQLException {
+    public boolean registerUser(String username, String email, String password) throws SQLException {
         if (isEmailExists(email)) {
-            throw new SQLException("Email already exists!"); // Ném ra ngoại lệ nếu email đã tồn tại
+            return false; // Trả về false nếu email đã tồn tại
         }
+
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
         String query = "INSERT INTO Accounts (Username, Email, Password) VALUES (?, ?, ?)";
 
@@ -145,22 +171,25 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
             stmt.setString(2, email);
             stmt.setString(3, hashedPassword);
             stmt.executeUpdate();
+            return true; // Trả về true nếu đăng ký thành công
         }
     }
 
-    public boolean loginUser(String username, String password) throws SQLException {
-        String query = "SELECT Password FROM Accounts WHERE Email = ?";
-
+    public String loginUser(String email, String password) throws SQLException {
+        String query = "SELECT username, password FROM Accounts WHERE email = ?";
         try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, username);
+
+            stmt.setString(1, email);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
                 String storedPassword = rs.getString("password");
-                return BCrypt.checkpw(password, storedPassword);
+                if (BCrypt.checkpw(password, storedPassword)) {
+                    return rs.getString("username"); // Trả về username khi đăng nhập thành công
+                }
             }
         }
-        return false;
+        return null; // Trả về null nếu đăng nhập thất bại
     }
 
     public boolean isEmailExists(String email) throws SQLException {
