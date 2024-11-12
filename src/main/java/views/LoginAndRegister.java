@@ -1,7 +1,7 @@
-package main;
+package views;
 
-import component.PanelCover;
-import component.PanelLoginAndRegister;
+import components.PanelCover;
+import components.PanelLoginAndRegister;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;

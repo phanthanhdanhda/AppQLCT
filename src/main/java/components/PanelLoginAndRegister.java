@@ -1,4 +1,4 @@
-package component;
+package components;
 
 import databaseconnection.DatabaseConnection;
 import java.awt.Color;
@@ -17,7 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import main.MainFrame;
+import views.MainFrame;
 import net.miginfocom.swing.MigLayout;
 import org.mindrot.jbcrypt.BCrypt;
 import session.UserSession;
@@ -164,7 +164,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
         }
 
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-        String query = "INSERT INTO Accounts (Username, Email, Password) VALUES (?, ?, ?)";
+        String query = "INSERT INTO accounts (username, email, password) VALUES (?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, username);
@@ -176,7 +176,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
     }
 
     public String loginUser(String email, String password) throws SQLException {
-        String query = "SELECT username, password FROM Accounts WHERE email = ?";
+        String query = "SELECT username, password FROM accounts WHERE email = ?";
         try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, email);
@@ -193,7 +193,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
     }
 
     public boolean isEmailExists(String email) throws SQLException {
-        String query = "SELECT COUNT(*) FROM Accounts WHERE Email = ?";
+        String query = "SELECT COUNT(*) FROM accounts WHERE email = ?";
 
         try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, email);
