@@ -2,6 +2,8 @@ package views;
 
 import components.PanelExpense;
 import components.PanelReceipt;
+import components.PanelSaving;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 
 public class MainFrame extends javax.swing.JFrame {
@@ -18,13 +20,14 @@ public class MainFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jSeparator6 = new javax.swing.JSeparator();
         tbMain = new javax.swing.JToolBar();
         btnAddExp = new javax.swing.JButton();
-        btnListExp = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JToolBar.Separator();
         btnAddRec = new javax.swing.JButton();
-        btnListRec = new javax.swing.JButton();
         jSeparator2 = new javax.swing.JToolBar.Separator();
+        jButton1 = new javax.swing.JButton();
+        jSeparator7 = new javax.swing.JToolBar.Separator();
         btnLock = new javax.swing.JButton();
         jSeparator5 = new javax.swing.JToolBar.Separator();
         btnCloseTab = new javax.swing.JButton();
@@ -64,13 +67,6 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
         tbMain.add(btnAddExp);
-
-        btnListExp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/list_32.png"))); // NOI18N
-        btnListExp.setText("List Expeneses");
-        btnListExp.setFocusable(false);
-        btnListExp.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnListExp.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        tbMain.add(btnListExp);
         tbMain.add(jSeparator1);
 
         btnAddRec.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/add_create_new_32.png"))); // NOI18N
@@ -84,14 +80,20 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
         tbMain.add(btnAddRec);
-
-        btnListRec.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/list_32.png"))); // NOI18N
-        btnListRec.setText("List Receipts");
-        btnListRec.setFocusable(false);
-        btnListRec.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnListRec.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        tbMain.add(btnListRec);
         tbMain.add(jSeparator2);
+
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/add_create_new_32.png"))); // NOI18N
+        jButton1.setText("Add Saving");
+        jButton1.setFocusable(false);
+        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        tbMain.add(jButton1);
+        tbMain.add(jSeparator7);
 
         btnLock.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/lock_security_close_protection_32.png"))); // NOI18N
         btnLock.setText("Lock");
@@ -107,6 +109,11 @@ public class MainFrame extends javax.swing.JFrame {
         btnCloseTab.setFocusable(false);
         btnCloseTab.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnCloseTab.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnCloseTab.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCloseTabActionPerformed(evt);
+            }
+        });
         tbMain.add(btnCloseTab);
 
         tpMain.setBackground(new java.awt.Color(255, 255, 255));
@@ -200,8 +207,8 @@ public class MainFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         JScrollPane scrp = new JScrollPane(new PanelExpense());
         tpMain.add("Add Expense", scrp);
-        //tpMain.revalidate(); // Cập nhật lại bố cục để hiển thị tab mới
-        //tpMain.repaint(); // Vẽ lại để đảm bảo giao diện đã được cập nhật
+        tpMain.revalidate(); // Cập nhật lại bố cục để hiển thị tab mới
+        tpMain.repaint(); // Vẽ lại để đảm bảo giao diện đã được cập nhật
     }//GEN-LAST:event_btnAddExpActionPerformed
 
     private void btnAddRecActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddRecActionPerformed
@@ -211,6 +218,29 @@ public class MainFrame extends javax.swing.JFrame {
         tpMain.revalidate(); // Cập nhật lại bố cục để hiển thị tab mới
         tpMain.repaint(); // Vẽ lại để đảm bảo giao diện đã được cập nhật
     }//GEN-LAST:event_btnAddRecActionPerformed
+
+    private void btnCloseTabActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseTabActionPerformed
+        // TODO add your handling code here:
+        // Lấy chỉ số của tab đang được chọn
+        int selectedIndex = tpMain.getSelectedIndex();
+
+        // Nếu có tab đang được chọn
+        if (selectedIndex != -1) {
+            // Đóng (hoặc loại bỏ) tab hiện tại
+            tpMain.remove(selectedIndex);
+        } else {
+            // Thông báo nếu không có tab nào được chọn
+            JOptionPane.showMessageDialog(this, "No tab selected to close!");
+        }
+    }//GEN-LAST:event_btnCloseTabActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        JScrollPane scrp = new JScrollPane(new PanelSaving());
+        tpMain.add("Add Saving", scrp);
+        tpMain.revalidate(); // Cập nhật lại bố cục để hiển thị tab mới
+        tpMain.repaint(); // Vẽ lại để đảm bảo giao diện đã được cập nhật
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -248,14 +278,15 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton btnAddExp;
     private javax.swing.JButton btnAddRec;
     private javax.swing.JButton btnCloseTab;
-    private javax.swing.JButton btnListExp;
-    private javax.swing.JButton btnListRec;
     private javax.swing.JButton btnLock;
+    private javax.swing.JButton jButton1;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JPopupMenu.Separator jSeparator4;
     private javax.swing.JToolBar.Separator jSeparator5;
+    private javax.swing.JSeparator jSeparator6;
+    private javax.swing.JToolBar.Separator jSeparator7;
     private javax.swing.JMenu menuAccount;
     private javax.swing.JMenu menuHelp;
     private javax.swing.JMenu menuManage;
