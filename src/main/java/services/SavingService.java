@@ -1,25 +1,22 @@
 package services;
 
 import java.time.LocalDate;
-import org.springframework.stereotype.Service;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
-import models.Expense;
-import models.Receipt;
+import models.Saving;
 import repositories.JpaUtil;
 
-@Service
-public class ReceiptService {
-    public void addReceipt(Double money, String description, LocalDate occurringDate) {
+public class SavingService {
+    public void addSaving(Double targetAmount, Double currentAmount, LocalDate targetDate) {
         EntityManager em = JpaUtil.getEntityManager();
         EntityTransaction transaction = em.getTransaction();
 
         try {
             transaction.begin();
-            Receipt receipt = new Receipt(money, description, occurringDate);
-            em.persist(receipt);  // Lưu vào cơ sở dữ liệu
+            Saving saving = new Saving(targetAmount, currentAmount, targetDate);
+            em.persist(saving);  // Lưu vào cơ sở dữ liệu
             transaction.commit();
         } catch (RuntimeException e) {
             if (transaction.isActive()) {
@@ -31,38 +28,39 @@ public class ReceiptService {
         }
     }
 
-    public List<Receipt> getAllReceipts() {
+    public List<Saving> getAllSavings() {
         EntityManager em = JpaUtil.getEntityManager();
 
         try {
-            // Sử dụng JPQL để lấy tất cả các Expense từ cơ sở dữ liệu
-            String jpql = "SELECT r FROM Receipt r";
+            // Sử dụng JPQL để lấy tất cả các Saving từ cơ sở dữ liệu
+            String jpql = "SELECT s FROM Saving s";
             Query query = em.createQuery(jpql);
 
             // Thực thi truy vấn và lấy kết quả
-            List<Receipt> receipts = query.getResultList();
-            return receipts;
+            List<Saving> savings = query.getResultList();
+            return savings;
         } finally {
             em.close();
         }
     }
 
-    public Receipt getReceiptById(Long id) {
+    public Saving getSavingById(Long id) {
         EntityManager em = JpaUtil.getEntityManager();
 
         try {
-            return em.find(Receipt.class, id);  // Tìm đối tượng Receipt theo ID
+            return em.find(Saving.class, id);  // Tìm đối tượng Saving theo ID
         } finally {
             em.close();
         }
     }
-    public void deleteReceiptById(Long id) {
+
+    public void deleteSavingById(Long id) {
         EntityManager em = JpaUtil.getEntityManager();
         try {
             em.getTransaction().begin();
-            Receipt receipt = em.find(Receipt.class, id);
-            if (receipt != null) {
-                em.remove(receipt);  // Xóa bản ghi nếu tìm thấy
+            Saving saving = em.find(Saving.class, id);
+            if (saving != null) {
+                em.remove(saving);  // Xóa bản ghi nếu tìm thấy
             }
             em.getTransaction().commit();
         } catch (Exception e) {
@@ -73,18 +71,18 @@ public class ReceiptService {
         }
     }
 
-    public Receipt updateReceipt(Long id, Double money, String description, LocalDate occurringDate) {
+    public Saving updateSaving(Long id, Double targetAmount, Double currentAmount, LocalDate targetDate) {
         EntityManager em = JpaUtil.getEntityManager();
-        Receipt updatedReceipt = null;
+        Saving updatedSaving = null;
         try {
             em.getTransaction().begin();
-            Receipt receipt = em.find(Receipt.class, id);
-            if (receipt != null) {
+            Saving saving = em.find(Saving.class, id);
+            if (saving != null) {
                 // Cập nhật thông tin mới
-                receipt.setMoney(money);
-                receipt.setDescription(description);
-                receipt.setOccurringDate(occurringDate);
-                updatedReceipt = em.merge(receipt);  // Gọi merge để cập nhật
+                saving.setTargetAmount(targetAmount);
+                saving.setCurrentAmount(currentAmount);
+                saving.setTargetDate(targetDate);
+                updatedSaving = em.merge(saving);  // Gọi merge để cập nhật
             }
             em.getTransaction().commit();
         } catch (Exception e) {
@@ -93,6 +91,6 @@ public class ReceiptService {
         } finally {
             em.close();
         }
-        return updatedReceipt;  // Trả về đối tượng Expense đã cập nhật
+        return updatedSaving;  // Trả về đối tượng Saving đã cập nhật
     }
 }

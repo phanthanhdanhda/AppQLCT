@@ -3,10 +3,8 @@ package components;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -18,7 +16,6 @@ import services.ReceiptService;
 
 public class PanelReceipt extends javax.swing.JPanel {
 
-    private ArrayList<Receipt> listReceipts = new ArrayList<>();
     private ReceiptService receiptService;
     private Long selectedReceiptId;
 
@@ -121,6 +118,8 @@ public class PanelReceipt extends javax.swing.JPanel {
             }
         ));
         tblReceipts.setColumnSelectionAllowed(true);
+        tblReceipts.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tblReceipts.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane2.setViewportView(tblReceipts);
         tblReceipts.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
@@ -296,6 +295,11 @@ public class PanelReceipt extends javax.swing.JPanel {
             };
             model.addRow(rowData);
         }
+        // Đặt lại các trường nhập liệu
+        txtMoney.setText("");
+        txtDescription.setText("");
+        dtpDate.setDate(null);
+        selectedReceiptId = null;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

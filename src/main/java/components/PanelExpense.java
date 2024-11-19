@@ -3,11 +3,9 @@ package components;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
@@ -18,7 +16,6 @@ import services.ExpenseService;
 
 public class PanelExpense extends javax.swing.JPanel {
 
-    private ArrayList<Expense> listExpenses = new ArrayList<>();
     private ExpenseService expenseService;
     private Long selectedExpenseId;
 
@@ -293,7 +290,7 @@ public class PanelExpense extends javax.swing.JPanel {
                 expense.getId(), // ID của Expense
                 expense.getOccurringDate() != null ? expense.getOccurringDate().format(formatter) : "", // Kiểm tra null
                 expense.getMoney(),
-                expense.getCreatedDate().format(formatter), // Chuyển LocalDateTime thành String
+                expense.getCreatedDate().format(formatter),
                 expense.getDescription()
             };
             model.addRow(rowData);
@@ -303,6 +300,7 @@ public class PanelExpense extends javax.swing.JPanel {
         txtMoney.setText("");
         txtDescription.setText("");
         dtpDate.setDate(null);
+        selectedExpenseId = null;
     }
 //    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {                                       
 //        // TODO add your handling code here:
