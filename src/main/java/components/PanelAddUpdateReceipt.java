@@ -37,7 +37,6 @@ public class PanelAddUpdateReceipt extends javax.swing.JPanel {
             Date date = dateFormat.parse((String) expenseData[3]);
             // Đặt giá trị vào JDateChooser
             dtpDate.setDate(date);
-            cbCategory.setSelectedItem((String) expenseData[4]);
         }
     }
 
@@ -55,10 +54,8 @@ public class PanelAddUpdateReceipt extends javax.swing.JPanel {
         txtAmount = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         txtDescription = new javax.swing.JTextField();
-        jLabel4 = new javax.swing.JLabel();
         btnConfirm = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
-        cbCategory = new javax.swing.JComboBox<>();
         jLabel5 = new javax.swing.JLabel();
         dtpDate = new com.toedter.calendar.JDateChooser();
 
@@ -68,7 +65,7 @@ public class PanelAddUpdateReceipt extends javax.swing.JPanel {
         setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         jLabel2.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        jLabel2.setText("Số tiền");
+        jLabel2.setText("Amount");
 
         lbLabel.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
         lbLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -77,15 +74,12 @@ public class PanelAddUpdateReceipt extends javax.swing.JPanel {
         txtAmount.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
 
         jLabel3.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        jLabel3.setText("Mô tả");
+        jLabel3.setText("Description");
 
         txtDescription.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
 
-        jLabel4.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        jLabel4.setText("Thể  loại");
-
         btnConfirm.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        btnConfirm.setText("Xác nhận");
+        btnConfirm.setText("OK");
         btnConfirm.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnConfirmActionPerformed(evt);
@@ -93,17 +87,15 @@ public class PanelAddUpdateReceipt extends javax.swing.JPanel {
         });
 
         btnCancel.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        btnCancel.setText("Huỷ");
+        btnCancel.setText("Cancel");
         btnCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCancelActionPerformed(evt);
             }
         });
 
-        cbCategory.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-
         jLabel5.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        jLabel5.setText("Ngày thực hiện");
+        jLabel5.setText("Date");
 
         dtpDate.setDateFormatString("yyyy-MM-dd");
 
@@ -124,10 +116,8 @@ public class PanelAddUpdateReceipt extends javax.swing.JPanel {
                             .addComponent(lbLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(txtDescription)
                             .addComponent(txtAmount)
-                            .addComponent(cbCategory, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(dtpDate, javax.swing.GroupLayout.DEFAULT_SIZE, 385, Short.MAX_VALUE))))
                 .addContainerGap())
@@ -149,11 +139,7 @@ public class PanelAddUpdateReceipt extends javax.swing.JPanel {
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(dtpDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(15, 15, 15)
-                .addComponent(jLabel4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cbCategory, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnCancel)
                     .addComponent(btnConfirm))
@@ -176,16 +162,15 @@ public class PanelAddUpdateReceipt extends javax.swing.JPanel {
         LocalDate date = selectedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         String description = txtDescription.getText();
         String amount = txtAmount.getText();
-        String category = (String) cbCategory.getSelectedItem();
 
         if (description.isEmpty() || amount.isEmpty()) {
-            JOptionPane.showMessageDialog(parentDialog, "Please fill in all fields.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(parentDialog, "Please fill in all fields!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         // Kiểm tra ràng buộc trước khi thêm vào database
         if (amount.isEmpty() || description.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please fill in all fields!", "Noitfication", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -194,7 +179,7 @@ public class PanelAddUpdateReceipt extends javax.swing.JPanel {
         try {
             money = Double.parseDouble(amount);
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Số tiền không hợp lệ!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Invalid amount!", "Noitfication", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -202,11 +187,11 @@ public class PanelAddUpdateReceipt extends javax.swing.JPanel {
         if (selectedReceiptId == -1) {
             // Thêm mới
             expenseService.addReceipt(money, description, date);
-            JOptionPane.showMessageDialog(this, "Thêm thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Added successfully!", "Noitfication", JOptionPane.INFORMATION_MESSAGE);
         } else {
             // Cập nhật
             expenseService.updateReceipt(selectedReceiptId, money, description, date);
-            JOptionPane.showMessageDialog(this, "Cập nhật thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Update successfully!", "Noitfication", JOptionPane.INFORMATION_MESSAGE);
         }
         parentDialog.dispose();
     }//GEN-LAST:event_btnConfirmActionPerformed
@@ -215,12 +200,10 @@ public class PanelAddUpdateReceipt extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnConfirm;
-    private javax.swing.JComboBox<String> cbCategory;
     private com.toedter.calendar.JDateChooser dtpDate;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel lbLabel;
     private javax.swing.JTextField txtAmount;

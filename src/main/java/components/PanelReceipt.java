@@ -153,7 +153,6 @@ public class PanelReceipt extends javax.swing.JPanel {
         panelBorder1 = new swing.PanelBorder();
         spTable = new javax.swing.JScrollPane();
         table = new swing.Table();
-        button2 = new swing.Button();
         button1 = new swing.Button();
         lbLabel = new javax.swing.JLabel();
 
@@ -192,11 +191,11 @@ public class PanelReceipt extends javax.swing.JPanel {
 
             },
             new String [] {
-                "ID", "No.", "Description", "Amount", "Date", "Category"
+                "ID", "No.", "Description", "Amount", "Date"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                true, false, false, false, false, false
+                true, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -221,11 +220,6 @@ public class PanelReceipt extends javax.swing.JPanel {
                 .addComponent(spTable, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE)
                 .addGap(10, 10, 10))
         );
-
-        button2.setBackground(new java.awt.Color(0, 204, 255));
-        button2.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
-        button2.setText("Report");
-        button2.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
 
         button1.setBackground(new java.awt.Color(51, 153, 255));
         button1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
@@ -256,9 +250,7 @@ public class PanelReceipt extends javax.swing.JPanel {
                             .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(button2, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(170, 170, 170))
+                            .addGap(170, 301, Short.MAX_VALUE))
                         .addGroup(layout.createSequentialGroup()
                             .addComponent(panelBorder1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGap(40, 40, 40))))
@@ -278,8 +270,7 @@ public class PanelReceipt extends javax.swing.JPanel {
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(button1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(button2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGap(18, 18, 18)
                     .addComponent(panelBorder1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGap(25, 25, 25)))
@@ -298,9 +289,8 @@ public class PanelReceipt extends javax.swing.JPanel {
         String description = (String) table.getValueAt(table.getSelectedRow(), 1);
         String amount = table.getValueAt(selectedRow, 2).toString(); // Truyền thẳng Double
         String date = (String) table.getValueAt(table.getSelectedRow(), 3);
-        String category = (String) table.getValueAt(table.getSelectedRow(), 4);
 
-        Object[] input = new Object[]{id.toString(), description, amount, date, category};
+        Object[] input = new Object[]{id.toString(), description, amount, date};
 
         try {
             // Hiển thị dialog để cập nhật thông tin
@@ -350,7 +340,6 @@ public class PanelReceipt extends javax.swing.JPanel {
     private swing.Button btnDelete;
     private swing.Button btnUpdate;
     private swing.Button button1;
-    private swing.Button button2;
     private javax.swing.JLabel lbLabel;
     private swing.PanelBorder panelBorder1;
     private javax.swing.JScrollPane spTable;

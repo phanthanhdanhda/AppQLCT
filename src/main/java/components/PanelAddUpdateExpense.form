@@ -47,10 +47,8 @@
                           <Component id="lbLabel" alignment="1" max="32767" attributes="0"/>
                           <Component id="jLabel2" alignment="1" max="32767" attributes="0"/>
                           <Component id="jLabel3" alignment="0" max="32767" attributes="0"/>
-                          <Component id="jLabel4" alignment="0" max="32767" attributes="0"/>
                           <Component id="txtDescription" alignment="0" max="32767" attributes="0"/>
                           <Component id="txtAmount" alignment="0" max="32767" attributes="0"/>
-                          <Component id="cbCategory" alignment="0" max="32767" attributes="0"/>
                           <Component id="jLabel5" alignment="0" max="32767" attributes="0"/>
                           <Component id="dtpDate" alignment="0" pref="385" max="32767" attributes="0"/>
                       </Group>
@@ -77,11 +75,7 @@
               <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="dtpDate" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
-              <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="cbCategory" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="22" max="32767" attributes="0"/>
+              <EmptySpace pref="27" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="btnCancel" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnConfirm" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -97,7 +91,7 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="SansSerif" size="14" style="0"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="S&#x1ed1; ti&#x1ec1;n"/>
+        <Property name="text" type="java.lang.String" value="Amount"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="lbLabel">
@@ -121,7 +115,7 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="SansSerif" size="14" style="0"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="M&#xf4; t&#x1ea3;"/>
+        <Property name="text" type="java.lang.String" value="Description"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtDescription">
@@ -131,20 +125,12 @@
         </Property>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="jLabel4">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="SansSerif" size="14" style="0"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Th&#x1ec3;  lo&#x1ea1;i"/>
-      </Properties>
-    </Component>
     <Component class="javax.swing.JButton" name="btnConfirm">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="SansSerif" size="14" style="0"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="X&#xe1;c nh&#x1ead;n"/>
+        <Property name="text" type="java.lang.String" value="OK"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnConfirmActionPerformed"/>
@@ -155,31 +141,18 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="SansSerif" size="14" style="0"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="Hu&#x1ef7;"/>
+        <Property name="text" type="java.lang.String" value="Cancel"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCancelActionPerformed"/>
       </Events>
-    </Component>
-    <Component class="javax.swing.JComboBox" name="cbCategory">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="SansSerif" size="14" style="0"/>
-        </Property>
-        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="0"/>
-        </Property>
-      </Properties>
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
-      </AuxValues>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel5">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="SansSerif" size="14" style="0"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="Ng&#xe0;y th&#x1ef1;c hi&#x1ec7;n"/>
+        <Property name="text" type="java.lang.String" value="Date"/>
       </Properties>
     </Component>
     <Component class="com.toedter.calendar.JDateChooser" name="dtpDate">

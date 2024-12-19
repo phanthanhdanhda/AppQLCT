@@ -34,8 +34,6 @@
                       <Component id="btnUpdate" min="-2" pref="125" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="btnDelete" min="-2" pref="125" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="btnReport" min="-2" pref="125" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
               </Group>
@@ -54,7 +52,6 @@
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="btnAdd" alignment="3" min="-2" pref="35" max="-2" attributes="0"/>
-                  <Component id="btnReport" alignment="3" min="-2" pref="35" max="-2" attributes="0"/>
                   <Component id="btnUpdate" alignment="3" min="-2" pref="35" max="-2" attributes="0"/>
                   <Component id="btnDelete" alignment="3" min="-2" pref="35" max="-2" attributes="0"/>
               </Group>
@@ -93,22 +90,6 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAddActionPerformed"/>
       </Events>
-    </Component>
-    <Component class="swing.Button" name="btnReport">
-      <Properties>
-        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="ff" green="cc" red="0" type="rgb"/>
-        </Property>
-        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-          <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
-            <EmptyBorder/>
-          </Border>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Report"/>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="SansSerif" size="14" style="1"/>
-        </Property>
-      </Properties>
     </Component>
     <Container class="swing.PanelBorder" name="panelBorder1">
       <Properties>
@@ -163,22 +144,16 @@
             <Component class="swing.Table" name="table">
               <Properties>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                  <Table columnCount="6" rowCount="0">
+                  <Table columnCount="5" rowCount="0">
                     <Column editable="false" title="ID" type="java.lang.Object"/>
                     <Column editable="false" title="No." type="java.lang.Object"/>
                     <Column editable="false" title="Description" type="java.lang.Object"/>
                     <Column editable="false" title="Amount" type="java.lang.Object"/>
                     <Column editable="false" title="Date" type="java.lang.Object"/>
-                    <Column editable="false" title="Category" type="java.lang.Object"/>
                   </Table>
                 </Property>
                 <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
                   <TableColumnModel selectionModel="0">
-                    <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                      <Title/>
-                      <Editor/>
-                      <Renderer/>
-                    </Column>
                     <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                       <Title/>
                       <Editor/>

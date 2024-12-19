@@ -150,7 +150,6 @@ public class PanelExpense extends javax.swing.JPanel {
 
         jLabel1 = new javax.swing.JLabel();
         btnAdd = new swing.Button();
-        btnReport = new swing.Button();
         panelBorder1 = new swing.PanelBorder();
         spTable = new javax.swing.JScrollPane();
         table = new swing.Table();
@@ -173,11 +172,6 @@ public class PanelExpense extends javax.swing.JPanel {
             }
         });
 
-        btnReport.setBackground(new java.awt.Color(0, 204, 255));
-        btnReport.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
-        btnReport.setText("Report");
-        btnReport.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
-
         panelBorder1.setBackground(new java.awt.Color(255, 255, 255));
         panelBorder1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
 
@@ -191,11 +185,11 @@ public class PanelExpense extends javax.swing.JPanel {
 
             },
             new String [] {
-                "ID", "No.", "Description", "Amount", "Date", "Category"
+                "ID", "No.", "Description", "Amount", "Date"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -258,8 +252,6 @@ public class PanelExpense extends javax.swing.JPanel {
                         .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnReport, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
@@ -273,7 +265,6 @@ public class PanelExpense extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnReport, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
@@ -303,9 +294,8 @@ public class PanelExpense extends javax.swing.JPanel {
         String description = (String) table.getValueAt(table.getSelectedRow(), 1);
         String amount = table.getValueAt(selectedRow, 2).toString();
         String date = (String) table.getValueAt(selectedRow, 3);
-        String category = (String) table.getValueAt(table.getSelectedRow(), 4);
 
-        Object[] input = new Object[]{id.toString(), description, amount, date, category};
+        Object[] input = new Object[]{id.toString(), description, amount, date};
 
         try {
             // Hiển thị dialog để cập nhật thông tin
@@ -344,7 +334,6 @@ public class PanelExpense extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private swing.Button btnAdd;
     private swing.Button btnDelete;
-    private swing.Button btnReport;
     private swing.Button btnUpdate;
     private javax.swing.JLabel jLabel1;
     private swing.PanelBorder panelBorder1;

@@ -29,21 +29,19 @@ public class Menu extends javax.swing.JPanel {
     }
     
     private void init() {
-        listMenu1.addItem(new Model_Menu("1", "Home", Model_Menu.MenuType.MENU));
-        listMenu1.addItem(new Model_Menu("2", "Expense", Model_Menu.MenuType.MENU));
-        listMenu1.addItem(new Model_Menu("3", "Receipt", Model_Menu.MenuType.MENU));
-        listMenu1.addItem(new Model_Menu("4", "Saving", Model_Menu.MenuType.MENU));
-        listMenu1.addItem(new Model_Menu("5", "Date Table", Model_Menu.MenuType.MENU));
-        listMenu1.addItem(new Model_Menu("", " ", Model_Menu.MenuType.EMPTY));
-
-        listMenu1.addItem(new Model_Menu("", "My Data", Model_Menu.MenuType.TITLE));
-        listMenu1.addItem(new Model_Menu("", " ", Model_Menu.MenuType.EMPTY));
-        listMenu1.addItem(new Model_Menu("6", "Icons", Model_Menu.MenuType.MENU));
-        listMenu1.addItem(new Model_Menu("7", "Sample Page", Model_Menu.MenuType.MENU));
-        listMenu1.addItem(new Model_Menu("8", "Extra", Model_Menu.MenuType.MENU));
-        listMenu1.addItem(new Model_Menu("9", "More", Model_Menu.MenuType.MENU));
-        listMenu1.addItem(new Model_Menu("10", "Logout", Model_Menu.MenuType.MENU));
+        listMenu1.addItem(new Model_Menu("menu", "Home", Model_Menu.MenuType.MENU));
         listMenu1.addItem(new Model_Menu("", "", Model_Menu.MenuType.EMPTY));
+        listMenu1.addItem(new Model_Menu("expenditure_20", "Receipt", Model_Menu.MenuType.MENU));
+        listMenu1.addItem(new Model_Menu("", "", Model_Menu.MenuType.EMPTY));
+        listMenu1.addItem(new Model_Menu("receipt_20", "receipt", Model_Menu.MenuType.MENU));
+        listMenu1.addItem(new Model_Menu("", " ", Model_Menu.MenuType.EMPTY));
+        listMenu1.addItem(new Model_Menu("saving_20", "Saving", Model_Menu.MenuType.MENU));
+        listMenu1.addItem(new Model_Menu("", "", Model_Menu.MenuType.EMPTY));
+        listMenu1.addItem(new Model_Menu("", "Others", Model_Menu.MenuType.TITLE));
+        listMenu1.addItem(new Model_Menu("", "", Model_Menu.MenuType.EMPTY));
+        listMenu1.addItem(new Model_Menu("settings_20", "Setting", Model_Menu.MenuType.MENU));
+        listMenu1.addItem(new Model_Menu("", "", Model_Menu.MenuType.EMPTY));
+        listMenu1.addItem(new Model_Menu("exit_logout_signout_20", "Exit", Model_Menu.MenuType.MENU));
     }
 
     @SuppressWarnings("unchecked")
@@ -82,6 +80,7 @@ public class Menu extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
+        listMenu1.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
         listMenu1.setOpaque(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);

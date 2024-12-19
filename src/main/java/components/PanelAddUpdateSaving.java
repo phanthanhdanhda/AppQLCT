@@ -65,7 +65,7 @@ public class PanelAddUpdateSaving extends javax.swing.JPanel {
         setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         jLabel2.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        jLabel2.setText("Số tiền mục tiêu");
+        jLabel2.setText("Target amount");
 
         lbLabel.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
         lbLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -74,12 +74,12 @@ public class PanelAddUpdateSaving extends javax.swing.JPanel {
         txtTargetAmount.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
 
         jLabel3.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        jLabel3.setText("Ngân sách hiện tại");
+        jLabel3.setText("Current amount");
 
         txtCurrentAmount.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
 
         btnConfirm.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        btnConfirm.setText("Xác nhận");
+        btnConfirm.setText("OK");
         btnConfirm.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnConfirmActionPerformed(evt);
@@ -87,7 +87,7 @@ public class PanelAddUpdateSaving extends javax.swing.JPanel {
         });
 
         btnCancel.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        btnCancel.setText("Huỷ");
+        btnCancel.setText("Cancel");
         btnCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCancelActionPerformed(evt);
@@ -95,12 +95,13 @@ public class PanelAddUpdateSaving extends javax.swing.JPanel {
         });
 
         jLabel5.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        jLabel5.setText("Thời hạn");
+        jLabel5.setText("Target Date");
 
         dtpDate.setDateFormatString("yyyy-MM-dd");
+        dtpDate.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
 
         jLabel4.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        jLabel4.setText("Mô tả");
+        jLabel4.setText("Description");
 
         txtDescription.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
 

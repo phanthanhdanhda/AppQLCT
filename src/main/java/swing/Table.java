@@ -18,7 +18,7 @@ public class Table extends JTable {
         // Mô hình bảng cơ bản
         DefaultTableModel model = new DefaultTableModel(
                 new Object[][]{}, // Dữ liệu ban đầu rỗng
-                new Object[]{"ID", "STT", "Description", "Amount", "Date", "Category"} // Cột ID thực tế không hiển thị
+                new Object[]{"ID", "STT", "Description", "Amount", "Date"} // Cột ID thực tế không hiển thị
         ) {
             @Override
             public boolean isCellEditable(int row, int column) {

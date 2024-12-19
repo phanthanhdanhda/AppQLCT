@@ -151,7 +151,6 @@ public class PanelSaving extends javax.swing.JPanel {
 
         jLabel1 = new javax.swing.JLabel();
         btnAdd = new swing.Button();
-        btnReport = new swing.Button();
         panelBorder1 = new swing.PanelBorder();
         spTable = new javax.swing.JScrollPane();
         table = new swing.Table();
@@ -173,11 +172,6 @@ public class PanelSaving extends javax.swing.JPanel {
                 btnAddActionPerformed(evt);
             }
         });
-
-        btnReport.setBackground(new java.awt.Color(0, 204, 255));
-        btnReport.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
-        btnReport.setText("Report");
-        btnReport.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
 
         panelBorder1.setBackground(new java.awt.Color(255, 255, 255));
         panelBorder1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
@@ -259,8 +253,6 @@ public class PanelSaving extends javax.swing.JPanel {
                         .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnReport, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
@@ -275,7 +267,6 @@ public class PanelSaving extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnReport, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
@@ -346,7 +337,6 @@ public class PanelSaving extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private swing.Button btnAdd;
     private swing.Button btnDelete;
-    private swing.Button btnReport;
     private swing.Button btnUpdate;
     private javax.swing.JLabel jLabel1;
     private swing.PanelBorder panelBorder1;
