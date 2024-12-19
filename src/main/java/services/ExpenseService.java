@@ -7,13 +7,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 import models.Expense;
-import repositories.JpaUtil;
+import utils.CustomEntityManager;
 
 @Service
 public class ExpenseService {
 
     public void addExpense(Double money, String description, LocalDate occurringDate) {
-        EntityManager em = JpaUtil.getEntityManager();
+        EntityManager em = CustomEntityManager.getEntityManager();
         EntityTransaction transaction = em.getTransaction();
 
         try {
@@ -27,12 +27,12 @@ public class ExpenseService {
             }
             e.printStackTrace();
         } finally {
-            em.close();  // Đảm bảo đóng EntityManager
+            em.close();
         }
     }
 
     public List<Expense> getAllExpenses() {
-        EntityManager em = JpaUtil.getEntityManager();
+        EntityManager em = CustomEntityManager.getEntityManager();
 
         try {
             // Sử dụng JPQL để lấy tất cả các Expense từ cơ sở dữ liệu
@@ -48,7 +48,7 @@ public class ExpenseService {
     }
 
     public Expense getExpenseById(Long id) {
-        EntityManager em = JpaUtil.getEntityManager();
+        EntityManager em = CustomEntityManager.getEntityManager();
 
         try {
             return em.find(Expense.class, id);  // Tìm đối tượng Expense theo ID
@@ -58,7 +58,7 @@ public class ExpenseService {
     }
 
     public void deleteExpenseById(Long id) {
-        EntityManager em = JpaUtil.getEntityManager();
+        EntityManager em = CustomEntityManager.getEntityManager();
         try {
             em.getTransaction().begin();
             Expense expense = em.find(Expense.class, id);
@@ -75,7 +75,7 @@ public class ExpenseService {
     }
 
     public Expense updateExpense(Long id, Double money, String description, LocalDate occurringDate) {
-        EntityManager em = JpaUtil.getEntityManager();
+        EntityManager em = CustomEntityManager.getEntityManager();
         Expense updatedExpense = null;
         try {
             em.getTransaction().begin();
@@ -97,22 +97,4 @@ public class ExpenseService {
         return updatedExpense;  // Trả về đối tượng Expense đã cập nhật
     }
 
-//    @Autowired
-//    private ExpenseRepository expenseRepository;
-//
-//    // Thêm Expense vào cơ sở dữ liệu
-//    public Expense addExpense(Double money, String description, LocalDateTime occurringDate) {
-//        Expense expense = new Expense(money, description, occurringDate);
-//        return expenseRepository.save(expense);  // Lưu vào database
-//    }
-//
-//    // Lấy tất cả các Expense từ database
-//    public List<Expense> getAllExpenses() {
-//        return expenseRepository.findAll();  // Lấy danh sách Expense
-//    }
-//
-//    // Xóa Expense theo ID
-//    public void deleteExpenseById(Long id) {
-//        expenseRepository.deleteById(id);
-//    }
 }

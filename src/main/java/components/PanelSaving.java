@@ -1,305 +1,356 @@
 package components;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 import models.Saving;
 import services.SavingService;
+import swing.ScrollBar;
 
 public class PanelSaving extends javax.swing.JPanel {
 
+    private DefaultTableModel tableModel;
     private SavingService savingService;
-    private Long selectedSavingId;
-    
+    private Long selectedSavingId = Long.valueOf(-1);
+    private int selectedRow = -1;
+
     public PanelSaving() {
         initComponents();
+        DisableButton();
         this.savingService = new SavingService();
-        loadSavingsToTable();
-        // Tạo DefaultTableModel tùy chỉnh để không cho phép chỉnh sửa
-        DefaultTableModel model = new DefaultTableModel(new Object[][]{}, new String[]{"ID", "Target Date", "Target Amount", "Current Amount"}) {
+        tableModel = new DefaultTableModel(new Object[]{"ID","STT", "Description", "Target", "Current", "Date"}, 0);
+        table.setModel(tableModel);
+        // Loại bỏ cột ID khỏi JTable hiển thị
+        TableColumnModel columnModel = table.getColumnModel();
+        columnModel.removeColumn(columnModel.getColumn(0)); // Cột 0 là cột ID thật
+        spTable.setVerticalScrollBar(new ScrollBar());
+        spTable.getVerticalScrollBar().setBackground(Color.WHITE);
+        spTable.getViewport().setBackground(Color.WHITE);
+        JPanel p = new JPanel();
+        p.setBackground(Color.WHITE);
+        spTable.setCorner(JScrollPane.UPPER_RIGHT_CORNER, p);
+        // Vô hiệu hóa chức năng chỉnh sửa ô trong bảng
+        table.setDefaultEditor(Object.class, null); // Không cho phép chỉnh sửa
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);  // Chỉ chọn 1 dòng
+
+        table.addMouseListener(new MouseAdapter() {
             @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;  // Không cho phép chỉnh sửa bất kỳ ô nào
-            }
-        };
-        // Thiết lập selection listener cho bảng
-        tblSavings.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent event) {
-                int selectedRow = tblSavings.getSelectedRow();
-                if (selectedRow >= 0) {
-                    try {
-                        // Lấy ID từ cột đầu tiên và gán cho selectedExpenseId
-                        selectedSavingId = (Long) tblSavings.getValueAt(selectedRow, 0);
-
-                        // Lấy và chuyển đổi ngày từ cột thứ hai
-                        String occurringDateStr = (String) tblSavings.getValueAt(selectedRow, 1);
-                        try {
-                            // Chuyển đổi chuỗi thành java.util.Date
-                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                            Date date = dateFormat.parse(occurringDateStr);
-                            dtpDate.setDate(date);  // Đặt giá trị cho JDateChooser
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                            JOptionPane.showMessageDialog(null, "Định dạng ngày không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                        }
-
-                        // Lấy tiền và mô tả từ các cột tương ứng
-                        txtTargetAmount.setText(tblSavings.getValueAt(selectedRow, 2).toString());
-                        txtCurrentAmount.setText(tblSavings.getValueAt(selectedRow, 3).toString());
-
-                    } catch (ClassCastException | NullPointerException ex) {
-                        ex.printStackTrace();
-                        JOptionPane.showMessageDialog(null, "Error loading data: " + ex.getMessage());
-                    }
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() >= 1 && table.getSelectedRow() != -1) {
+                    selectedRow = table.getSelectedRow();
                 }
             }
         });
+        // Lắng nghe sự kiện chọn dòng
+        table.getSelectionModel().addListSelectionListener(e -> {
+            selectedRow = table.getSelectedRow();
+            if (selectedRow >= 0) {
+                // Nếu có dòng được chọn, kích hoạt nút Update và Delete
+                btnUpdate.setEnabled(true);  // Kích hoạt nút Update
+                btnUpdate.setBackground(new Color(255, 255, 0));
+                btnDelete.setEnabled(true);  // Kích hoạt nút Delete
+                btnDelete.setBackground(new Color(255, 0, 0));
+                // Lấy ID thật từ model
+                int modelRow = table.convertRowIndexToModel(selectedRow); // Chuyển index từ view sang model
+                selectedSavingId = (Long) tableModel.getValueAt(modelRow, 0);
+                EnableButton();
+            } else {
+                DisableButton();
+            }
+        });
+
+        loadSavingsToTable();  // Tải dữ liệu vào bảng
+    }
+
+    public void ShowDialog(String title, Object[] input) throws ParseException {
+        JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this); // 'this' là JPanel hiện tại
+        parentFrame.setEnabled(false);
+
+        JDialog dialog = new JDialog(parentFrame, title, true); // Tạo dialog modal
+        dialog.setUndecorated(true);
+        dialog.setSize(400, 350);
+        dialog.setLocationRelativeTo(parentFrame);
+
+        // Phân biệt chế độ Add và Update dựa trên title
+        Object[] dialogInput = null;
+        if (input != null && "Update Saving".equalsIgnoreCase(title)) {
+            dialogInput = input; // Sử dụng dữ liệu đầu vào cho chế độ Update
+        }
+
+        dialog.add(new PanelAddUpdateSaving(title, dialog, dialogInput, tableModel), BorderLayout.CENTER);
+
+        dialog.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                // Hành động thực hiện sau khi JDialog đóng
+                loadSavingsToTable();
+                parentFrame.setVisible(true);
+                parentFrame.setEnabled(true);
+                selectedSavingId = Long.valueOf(-1);
+            }
+        });
+
+        dialog.setVisible(true);
+    }
+
+    public void loadSavingsToTable() {
+        // Xóa dữ liệu cũ trong table model
+        tableModel.setRowCount(0);
+
+        // Lấy danh sách savings từ cơ sở dữ liệu
+        List<Saving> savings = savingService.getAllSavings();
+
+        // Duyệt qua danh sách và thêm vào table model
+        int stt = 1; // Bắt đầu từ 1
+        for (Saving saving : savings) {
+            tableModel.addRow(new Object[]{
+                saving.getId(), // Cột ID thật (không hiển thị)
+                stt++, // Hiển thị STT
+                saving.getTargetDescription(),
+                saving.getTargetAmount(),
+                saving.getCurrentAmount(),
+                saving.getTargetDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+            });
+        }
+    }
+
+    public void DisableButton() {
+        btnUpdate.setBackground(Color.lightGray);
+        btnDelete.setBackground(Color.lightGray);
+        btnUpdate.setEnabled(false);
+        btnDelete.setEnabled(false);
+    }
+
+    public void EnableButton() {
+        btnUpdate.setEnabled(true);
+        btnDelete.setEnabled(true);
+        btnUpdate.setBackground(new Color(255, 255, 0));
+        btnDelete.setBackground(new Color(255, 0, 0));
     }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        panelsave = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        txtTargetAmount = new javax.swing.JTextField();
-        dtpDate = new com.toedter.calendar.JDateChooser();
-        txtCurrentAmount = new javax.swing.JTextField();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tblSavings = new javax.swing.JTable();
-        btnAdd = new javax.swing.JButton();
-        btnDelete = new javax.swing.JButton();
-        btnUpdate = new javax.swing.JButton();
+        btnAdd = new swing.Button();
+        btnReport = new swing.Button();
+        panelBorder1 = new swing.PanelBorder();
+        spTable = new javax.swing.JScrollPane();
+        table = new swing.Table();
+        btnUpdate = new swing.Button();
+        btnDelete = new swing.Button();
 
-        panelsave.setPreferredSize(new java.awt.Dimension(760, 315));
+        setBackground(new java.awt.Color(255, 255, 255));
 
-        jLabel1.setText("Target Date");
+        jLabel1.setFont(new java.awt.Font("SansSerif", 1, 24)); // NOI18N
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("Personal Saving Manager");
 
-        jLabel2.setText("Target Amount");
-
-        jLabel3.setText("Current Amount");
-
-        tblSavings.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
-            },
-            new String [] {
-                "ID", "Target Date", "Target Amount", "Current Amount", "Created Date"
-            }
-        ));
-        tblSavings.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        tblSavings.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane1.setViewportView(tblSavings);
-
+        btnAdd.setBackground(new java.awt.Color(51, 255, 51));
+        btnAdd.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         btnAdd.setText("Add");
+        btnAdd.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         btnAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAddActionPerformed(evt);
             }
         });
 
-        btnDelete.setText("Delete");
-        btnDelete.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnDeleteActionPerformed(evt);
+        btnReport.setBackground(new java.awt.Color(0, 204, 255));
+        btnReport.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        btnReport.setText("Report");
+        btnReport.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
+
+        panelBorder1.setBackground(new java.awt.Color(255, 255, 255));
+        panelBorder1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+
+        spTable.setBackground(new java.awt.Color(255, 255, 255));
+        spTable.setBorder(null);
+        spTable.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        spTable.setOpaque(false);
+
+        table.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "ID", "No.", "Description", "Target Amount", "Current Amount", "Target Date"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, true, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
+        table.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        spTable.setViewportView(table);
 
+        javax.swing.GroupLayout panelBorder1Layout = new javax.swing.GroupLayout(panelBorder1);
+        panelBorder1.setLayout(panelBorder1Layout);
+        panelBorder1Layout.setHorizontalGroup(
+            panelBorder1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelBorder1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(spTable, javax.swing.GroupLayout.DEFAULT_SIZE, 634, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        panelBorder1Layout.setVerticalGroup(
+            panelBorder1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelBorder1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(spTable, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE)
+                .addGap(10, 10, 10))
+        );
+
+        btnUpdate.setBackground(new java.awt.Color(204, 204, 204));
+        btnUpdate.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         btnUpdate.setText("Update");
+        btnUpdate.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         btnUpdate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnUpdateActionPerformed(evt);
             }
         });
 
-        javax.swing.GroupLayout panelsaveLayout = new javax.swing.GroupLayout(panelsave);
-        panelsave.setLayout(panelsaveLayout);
-        panelsaveLayout.setHorizontalGroup(
-            panelsaveLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelsaveLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panelsaveLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelsaveLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jLabel1)
-                        .addComponent(dtpDate, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
-                        .addComponent(jLabel2)
-                        .addComponent(jLabel3)
-                        .addComponent(txtTargetAmount)
-                        .addComponent(txtCurrentAmount))
-                    .addGroup(panelsaveLayout.createSequentialGroup()
-                        .addGap(85, 85, 85)
-                        .addGroup(panelsaveLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(btnDelete)
-                            .addComponent(btnAdd)
-                            .addComponent(btnUpdate))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 482, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        panelsaveLayout.setVerticalGroup(
-            panelsaveLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelsaveLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panelsaveLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addGroup(panelsaveLayout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(dtpDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtTargetAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtCurrentAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnAdd)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnDelete)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnUpdate)
-                        .addGap(0, 24, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
+        btnDelete.setBackground(new java.awt.Color(204, 204, 204));
+        btnDelete.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        btnDelete.setText("Delete");
+        btnDelete.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panelsave, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(40, 40, 40)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(panelBorder1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(40, 40, 40))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnReport, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panelsave, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(30, 30, 30)
+                .addComponent(jLabel1)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnReport, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(panelBorder1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(20, 20, 20))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-        // TODO add your handling code here:
-        // Lấy dữ liệu từ các trường
-        Date selectedDate = dtpDate.getDate();
-        if (selectedDate == null) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn ngày hợp lệ!", "Thông báo", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        LocalDate date = selectedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        String targetAmountText = txtTargetAmount.getText();
-        String currentAmountText = txtCurrentAmount.getText();
-        // Kiểm tra ràng buộc trước khi thêm vào database
-        if (targetAmountText.isEmpty() || currentAmountText.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Thông báo", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        // Chuyển đổi money sang double
-        double targetAmount;
         try {
-            targetAmount = Double.parseDouble(targetAmountText);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Số tiền không hợp lệ!", "Thông báo", JOptionPane.WARNING_MESSAGE);
-            return;
+            // TODO add your handling code here:
+            ShowDialog("Add New Saving", null);
+        } catch (ParseException ex) {
+            Logger.getLogger(PanelSaving.class.getName()).log(Level.SEVERE, null, ex);
         }
-        double currentAmount;
-        try {
-            currentAmount = Double.parseDouble(currentAmountText);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Số tiền không hợp lệ!", "Thông báo", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        // Lưu vào cơ sở dữ liệu thông qua ExpenseService
-        savingService.addSaving(targetAmount, currentAmount, date);  // Gọi đến service để lưu đối tượng
-        // Reset các trường văn bản
-        txtCurrentAmount.setText("");
-        txtTargetAmount.setText("");
-        dtpDate.setDate(null); // Đặt lại ngày
-        loadSavingsToTable();
     }//GEN-LAST:event_btnAddActionPerformed
-
-    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        // TODO add your handling code here:
-        if (selectedSavingId != null) {
-            // Gọi service hoặc EntityManager để xóa expense dựa trên ID
-            savingService.deleteSavingById(selectedSavingId);
-
-            // Cập nhật lại bảng sau khi xóa
-            loadSavingsToTable();
-            JOptionPane.showMessageDialog(this, "Saving deleted successfully!");
-        }
-    }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
         // TODO add your handling code here:
-        if (selectedSavingId != null) {
-            double targetAmount = Double.parseDouble(txtTargetAmount.getText());
-            double currentAmount = Double.parseDouble(txtCurrentAmount.getText());
+        if (selectedSavingId <= -1) {
+            JOptionPane.showMessageDialog(this, "No row selected. Please select a row to update.", "Warning", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-            // Chuyển đổi sang LocalDate từ JDateChooser
-            LocalDate date = dtpDate.getDate().toInstant()
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDate();
+        // Lấy dữ liệu từ dòng được chọn
+        Long id = selectedSavingId; // Lấy ID thật từ cột ẩn
+        String description = (String) table.getValueAt(table.getSelectedRow(), 1);
+        String target = table.getValueAt(selectedRow, 2).toString();
+        String current = table.getValueAt(selectedRow, 3).toString();
+        String date = (String) table.getValueAt(selectedRow, 4);
 
-            // Gọi service để cập nhật Expense với LocalDate
-            savingService.updateSaving(selectedSavingId, targetAmount, currentAmount, date);
+        Object[] input = new Object[]{id.toString(), description, target, current, date};
 
-            // Cập nhật bảng sau khi sửa
-            loadSavingsToTable();
-            JOptionPane.showMessageDialog(this, "Saving updated successfully!");
+        try {
+            // Hiển thị dialog để cập nhật thông tin
+            ShowDialog("Update Saving", input);
+        } catch (ParseException ex) {
+            Logger.getLogger(PanelSaving.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnUpdateActionPerformed
 
-    private void loadSavingsToTable() {
-        List<Saving> savings = savingService.getAllSavings(); // Lấy danh sách Expense từ database
-        DefaultTableModel model = (DefaultTableModel) tblSavings.getModel();
-        model.setRowCount(0); // Xóa các hàng cũ trong bảng
-
-        // Định dạng LocalDateTime thành chuỗi
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        for (Saving saving : savings) {
-            Object[] rowData = {
-                saving.getId(), // ID của Expense
-                saving.getTargetDate()!= null ? saving.getTargetDate().format(formatter) : "", // Kiểm tra null
-                saving.getTargetAmount(),
-                saving.getCurrentAmount(),
-                saving.getCreatedDate().format(formatter)
-            };
-            model.addRow(rowData);
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        // TODO add your handling code here:
+        // Kiểm tra nếu không có dòng nào được chọn
+        if (selectedSavingId <= -1) {
+            JOptionPane.showMessageDialog(this, "No row selected. Please select a row to delete.", "Warning", JOptionPane.WARNING_MESSAGE);
+            return; // Thoát khỏi phương thức nếu không có dòng được chọn
         }
 
-        // Đặt lại các trường nhập liệu
-        txtCurrentAmount.setText("");
-        txtCurrentAmount.setText("");
-        dtpDate.setDate(null);
-        selectedSavingId = null;
-    }
+        // Xác nhận xóa
+        int response = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this saving?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
+        if (response == JOptionPane.YES_OPTION) {
+            // Xóa saving từ cơ sở dữ liệu
+            if (selectedSavingId != -1) {
+                savingService.deleteSavingById(selectedSavingId);
+                JOptionPane.showMessageDialog(this, "Xoá thành công", "Notification", JOptionPane.INFORMATION_MESSAGE);
+                // Cập nhật lại bảng
+                loadSavingsToTable();
+
+                // Reset trạng thái các nút Update và delete
+                DisableButton();
+                selectedSavingId = Long.valueOf(-1);
+            }
+        }
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnAdd;
-    private javax.swing.JButton btnDelete;
-    private javax.swing.JButton btnUpdate;
-    private com.toedter.calendar.JDateChooser dtpDate;
+    private swing.Button btnAdd;
+    private swing.Button btnDelete;
+    private swing.Button btnReport;
+    private swing.Button btnUpdate;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JPanel panelsave;
-    private javax.swing.JTable tblSavings;
-    private javax.swing.JTextField txtCurrentAmount;
-    private javax.swing.JTextField txtTargetAmount;
+    private swing.PanelBorder panelBorder1;
+    private javax.swing.JScrollPane spTable;
+    private swing.Table table;
     // End of variables declaration//GEN-END:variables
 }

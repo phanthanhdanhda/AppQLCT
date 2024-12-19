@@ -1,368 +1,354 @@
 package components;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 import models.Expense;
 import services.ExpenseService;
+import swing.ScrollBar;
 
 public class PanelExpense extends javax.swing.JPanel {
 
+    private DefaultTableModel tableModel;
     private ExpenseService expenseService;
-    private Long selectedExpenseId;
+    private Long selectedExpenseId = Long.valueOf(-1);
+    private int selectedRow = -1;
 
     public PanelExpense() {
         initComponents();
+        DisableButton();
         this.expenseService = new ExpenseService();
-        loadExpensesToTable();
-        // Tạo DefaultTableModel tùy chỉnh để không cho phép chỉnh sửa
-        DefaultTableModel model = new DefaultTableModel(new Object[][]{}, new String[]{"ID", "Occuring Date", "Money", "Description"}) {
+        tableModel = (DefaultTableModel) table.getModel();
+        // Loại bỏ cột ID khỏi JTable hiển thị
+        TableColumnModel columnModel = table.getColumnModel();
+        columnModel.removeColumn(columnModel.getColumn(0)); // Cột 0 là cột ID thật
+        spTable.setVerticalScrollBar(new ScrollBar());
+        spTable.getVerticalScrollBar().setBackground(Color.WHITE);
+        spTable.getViewport().setBackground(Color.WHITE);
+        JPanel p = new JPanel();
+        p.setBackground(Color.WHITE);
+        spTable.setCorner(JScrollPane.UPPER_RIGHT_CORNER, p);
+        // Vô hiệu hóa chức năng chỉnh sửa ô trong bảng
+        table.setDefaultEditor(Object.class, null); // Không cho phép chỉnh sửa
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);  // Chỉ chọn 1 dòng
+
+        table.addMouseListener(new MouseAdapter() {
             @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;  // Không cho phép chỉnh sửa bất kỳ ô nào
-            }
-        };
-        // Thiết lập selection listener cho bảng
-        tblExpenses.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent event) {
-                int selectedRow = tblExpenses.getSelectedRow();
-                if (selectedRow >= 0) {
-                    try {
-                        // Lấy ID từ cột đầu tiên và gán cho selectedExpenseId
-                        selectedExpenseId = (Long) tblExpenses.getValueAt(selectedRow, 0);
-
-                        // Lấy và chuyển đổi ngày từ cột thứ hai
-                        String occurringDateStr = (String) tblExpenses.getValueAt(selectedRow, 1);
-                        try {
-                            // Chuyển đổi chuỗi thành java.util.Date
-                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                            Date date = dateFormat.parse(occurringDateStr);
-                            dtpDate.setDate(date);  // Đặt giá trị cho JDateChooser
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                            JOptionPane.showMessageDialog(null, "Định dạng ngày không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                        }
-
-                        // Lấy tiền và mô tả từ các cột tương ứng
-                        txtMoney.setText(tblExpenses.getValueAt(selectedRow, 2).toString());
-                        txtDescription.setText(tblExpenses.getValueAt(selectedRow, 4).toString());
-
-                    } catch (ClassCastException | NullPointerException ex) {
-                        ex.printStackTrace();
-                        JOptionPane.showMessageDialog(null, "Error loading data: " + ex.getMessage());
-                    }
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() >= 1 && table.getSelectedRow() != -1) {
+                    selectedRow = table.getSelectedRow();
                 }
             }
         });
+        // Lắng nghe sự kiện chọn dòng
+        table.getSelectionModel().addListSelectionListener(e -> {
+            selectedRow = table.getSelectedRow();
+            if (selectedRow >= 0) {
+                // Nếu có dòng được chọn, kích hoạt nút Update và Delete
+                btnUpdate.setEnabled(true);  // Kích hoạt nút Update
+                btnUpdate.setBackground(new Color(255, 255, 0));
+                btnDelete.setEnabled(true);  // Kích hoạt nút Delete
+                btnDelete.setBackground(new Color(255, 0, 0));
+                // Lấy ID thật từ model
+                int modelRow = table.convertRowIndexToModel(selectedRow); // Chuyển index từ view sang model
+                selectedExpenseId = (Long) tableModel.getValueAt(modelRow, 0);
+                EnableButton();
+            } else {
+                DisableButton();
+            }
+        });
+
+        loadExpensesToTable();  // Tải dữ liệu vào bảng
+    }
+
+    public void ShowDialog(String title, Object[] input) throws ParseException {
+        JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this); // 'this' là JPanel hiện tại
+        parentFrame.setEnabled(false);
+
+        JDialog dialog = new JDialog(parentFrame, title, true); // Tạo dialog modal
+        dialog.setUndecorated(true);
+        dialog.setSize(400, 350);
+        dialog.setLocationRelativeTo(parentFrame);
+
+        // Phân biệt chế độ Add và Update dựa trên title
+        Object[] dialogInput = null;
+        if (input != null && "Update Expense".equalsIgnoreCase(title)) {
+            dialogInput = input; // Sử dụng dữ liệu đầu vào cho chế độ Update
+        }
+
+        dialog.add(new PanelAddUpdateExpense(title, dialog, dialogInput, tableModel), BorderLayout.CENTER);
+
+        dialog.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                // Hành động thực hiện sau khi JDialog đóng
+                loadExpensesToTable();
+                parentFrame.setVisible(true);
+                parentFrame.setEnabled(true);
+                selectedExpenseId = Long.valueOf(-1);
+            }
+        });
+
+        dialog.setVisible(true);
+    }
+
+    public void loadExpensesToTable() {
+        // Xóa dữ liệu cũ trong table model
+        tableModel.setRowCount(0);
+
+        // Lấy danh sách expenses từ cơ sở dữ liệu
+        List<Expense> expenses = expenseService.getAllExpenses();
+
+        // Duyệt qua danh sách và thêm vào table model
+        int stt = 1; // Bắt đầu từ 1
+        for (Expense expense : expenses) {
+            tableModel.addRow(new Object[]{
+                expense.getId(), // Cột ID thật (không hiển thị)
+                stt++, // Hiển thị STT
+                expense.getDescription(),
+                expense.getMoney(),
+                expense.getOccurringDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                "Food"
+            });
+        }
+    }
+
+    public void DisableButton() {
+        btnUpdate.setBackground(Color.lightGray);
+        btnDelete.setBackground(Color.lightGray);
+        btnUpdate.setEnabled(false);
+        btnDelete.setEnabled(false);
+    }
+
+    public void EnableButton() {
+        btnUpdate.setEnabled(true);
+        btnDelete.setEnabled(true);
+        btnUpdate.setBackground(new Color(255, 255, 0));
+        btnDelete.setBackground(new Color(255, 0, 0));
     }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        pnlExpense = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        txtMoney = new javax.swing.JTextField();
-        dtpDate = new com.toedter.calendar.JDateChooser();
-        btnAdd = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        txtDescription = new javax.swing.JTextArea();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        tblExpenses = new javax.swing.JTable();
-        btnDelete = new javax.swing.JButton();
-        btnUpdate = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        btnAdd = new swing.Button();
+        btnReport = new swing.Button();
+        panelBorder1 = new swing.PanelBorder();
+        spTable = new javax.swing.JScrollPane();
+        table = new swing.Table();
+        btnUpdate = new swing.Button();
+        btnDelete = new swing.Button();
 
-        setPreferredSize(new java.awt.Dimension(760, 315));
+        setBackground(new java.awt.Color(255, 255, 255));
 
-        pnlExpense.setPreferredSize(new java.awt.Dimension(760, 315));
+        jLabel1.setFont(new java.awt.Font("SansSerif", 1, 24)); // NOI18N
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("Personal Expense Manager");
 
-        jLabel2.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jLabel2.setText("Money");
-
-        jLabel3.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jLabel3.setText("Date");
-
-        jLabel4.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jLabel4.setText("Description");
-
-        dtpDate.setDateFormatString("yyyy-MM-dd");
-
-        btnAdd.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        btnAdd.setBackground(new java.awt.Color(51, 255, 51));
+        btnAdd.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         btnAdd.setText("Add");
+        btnAdd.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         btnAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAddActionPerformed(evt);
             }
         });
 
-        txtDescription.setColumns(20);
-        txtDescription.setRows(5);
-        jScrollPane1.setViewportView(txtDescription);
+        btnReport.setBackground(new java.awt.Color(0, 204, 255));
+        btnReport.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        btnReport.setText("Report");
+        btnReport.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
 
-        tblExpenses.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        tblExpenses.setModel(new javax.swing.table.DefaultTableModel(
+        panelBorder1.setBackground(new java.awt.Color(255, 255, 255));
+        panelBorder1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+
+        spTable.setBackground(new java.awt.Color(255, 255, 255));
+        spTable.setBorder(null);
+        spTable.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        spTable.setOpaque(false);
+
+        table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "ID", "Date Occured", "Money", "Created Date", "Description"
+                "ID", "No.", "Description", "Amount", "Date", "Category"
             }
-        ));
-        tblExpenses.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        tblExpenses.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane2.setViewportView(tblExpenses);
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
 
-        btnDelete.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        btnDelete.setText("Delete");
-        btnDelete.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnDeleteActionPerformed(evt);
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
+        table.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        spTable.setViewportView(table);
 
-        btnUpdate.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        javax.swing.GroupLayout panelBorder1Layout = new javax.swing.GroupLayout(panelBorder1);
+        panelBorder1.setLayout(panelBorder1Layout);
+        panelBorder1Layout.setHorizontalGroup(
+            panelBorder1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelBorder1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(spTable, javax.swing.GroupLayout.DEFAULT_SIZE, 634, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        panelBorder1Layout.setVerticalGroup(
+            panelBorder1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelBorder1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(spTable, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE)
+                .addGap(10, 10, 10))
+        );
+
+        btnUpdate.setBackground(new java.awt.Color(204, 204, 204));
+        btnUpdate.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         btnUpdate.setText("Update");
+        btnUpdate.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
         btnUpdate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnUpdateActionPerformed(evt);
             }
         });
 
-        javax.swing.GroupLayout pnlExpenseLayout = new javax.swing.GroupLayout(pnlExpense);
-        pnlExpense.setLayout(pnlExpenseLayout);
-        pnlExpenseLayout.setHorizontalGroup(
-            pnlExpenseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlExpenseLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(pnlExpenseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(pnlExpenseLayout.createSequentialGroup()
-                        .addGroup(pnlExpenseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel4))
-                        .addGap(12, 12, 12)
-                        .addGroup(pnlExpenseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(dtpDate, javax.swing.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE)
-                            .addComponent(txtMoney)))
-                    .addGroup(pnlExpenseLayout.createSequentialGroup()
-                        .addComponent(btnAdd)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnDelete)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnUpdate))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        pnlExpenseLayout.setVerticalGroup(
-            pnlExpenseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlExpenseLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(pnlExpenseLayout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addGroup(pnlExpenseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3)
-                    .addComponent(dtpDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(pnlExpenseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(txtMoney, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(jLabel4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(pnlExpenseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnAdd)
-                    .addComponent(btnDelete)
-                    .addComponent(btnUpdate))
-                .addGap(20, 20, 20))
-        );
+        btnDelete.setBackground(new java.awt.Color(204, 204, 204));
+        btnDelete.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        btnDelete.setText("Delete");
+        btnDelete.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(40, 40, 40)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(panelBorder1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(40, 40, 40))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnReport, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(pnlExpense, javax.swing.GroupLayout.PREFERRED_SIZE, 766, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap()
+                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(pnlExpense, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(30, 30, 30)
+                .addComponent(jLabel1)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnReport, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(panelBorder1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(20, 20, 20))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-        // TODO add your handling code here:
-        // Lấy dữ liệu từ các trường
-        Date selectedDate = dtpDate.getDate();
-        if (selectedDate == null) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn ngày hợp lệ!", "Thông báo", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        LocalDate date = selectedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        String moneyText = txtMoney.getText();
-        String description = txtDescription.getText();
-
-        // Kiểm tra ràng buộc trước khi thêm vào database
-        if (moneyText.isEmpty() || description.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Thông báo", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        // Chuyển đổi money sang double
-        double money;
         try {
-            money = Double.parseDouble(moneyText);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Số tiền không hợp lệ!", "Thông báo", JOptionPane.WARNING_MESSAGE);
-            return;
+            // TODO add your handling code here:
+            ShowDialog("Add New Expense", null);
+        } catch (ParseException ex) {
+            Logger.getLogger(PanelExpense.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        // Lưu vào cơ sở dữ liệu thông qua ExpenseService
-        expenseService.addExpense(money, description, date);  // Gọi đến service để lưu đối tượng
-
-        // Reset các trường văn bản
-        txtMoney.setText("");
-        txtDescription.setText("");
-        dtpDate.setDate(null); // Đặt lại ngày
-        loadExpensesToTable();
     }//GEN-LAST:event_btnAddActionPerformed
-
-    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        // TODO add your handling code here:
-        if (selectedExpenseId != null) {
-            // Gọi service hoặc EntityManager để xóa expense dựa trên ID
-            expenseService.deleteExpenseById(selectedExpenseId);
-
-            // Cập nhật lại bảng sau khi xóa
-            loadExpensesToTable();
-            JOptionPane.showMessageDialog(this, "Expense deleted successfully!");
-        }
-    }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
         // TODO add your handling code here:
-        if (selectedExpenseId != null) {
-            double money = Double.parseDouble(txtMoney.getText());
-            String description = txtDescription.getText();
+        if (selectedExpenseId <= -1) {
+            JOptionPane.showMessageDialog(this, "No row selected. Please select a row to update.", "Warning", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-            // Chuyển đổi sang LocalDate từ JDateChooser
-            LocalDate occurringDate = dtpDate.getDate().toInstant()
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDate();
+        // Lấy dữ liệu từ dòng được chọn
+        Long id = selectedExpenseId; // Lấy ID thật từ cột ẩn
+        String description = (String) table.getValueAt(table.getSelectedRow(), 1);
+        String amount = table.getValueAt(selectedRow, 2).toString();
+        String date = (String) table.getValueAt(selectedRow, 3);
+        String category = (String) table.getValueAt(table.getSelectedRow(), 4);
 
-            // Gọi service để cập nhật Expense với LocalDate
-            expenseService.updateExpense(selectedExpenseId, money, description, occurringDate);
+        Object[] input = new Object[]{id.toString(), description, amount, date, category};
 
-            // Cập nhật bảng sau khi sửa
-            loadExpensesToTable();
-            JOptionPane.showMessageDialog(this, "Expense updated successfully!");
+        try {
+            // Hiển thị dialog để cập nhật thông tin
+            ShowDialog("Update Expense", input);
+        } catch (ParseException ex) {
+            Logger.getLogger(PanelExpense.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnUpdateActionPerformed
 
-    private void loadExpensesToTable() {
-        List<Expense> expenses = expenseService.getAllExpenses(); // Lấy danh sách Expense từ database
-        DefaultTableModel model = (DefaultTableModel) tblExpenses.getModel();
-        model.setRowCount(0); // Xóa các hàng cũ trong bảng
-
-        // Định dạng LocalDateTime thành chuỗi
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        for (Expense expense : expenses) {
-            Object[] rowData = {
-                expense.getId(), // ID của Expense
-                expense.getOccurringDate() != null ? expense.getOccurringDate().format(formatter) : "", // Kiểm tra null
-                expense.getMoney(),
-                expense.getCreatedDate().format(formatter),
-                expense.getDescription()
-            };
-            model.addRow(rowData);
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        // TODO add your handling code here:
+        // Kiểm tra nếu không có dòng nào được chọn
+        if (selectedExpenseId <= -1) {
+            JOptionPane.showMessageDialog(this, "No row selected. Please select a row to delete.", "Warning", JOptionPane.WARNING_MESSAGE);
+            return; // Thoát khỏi phương thức nếu không có dòng được chọn
         }
 
-        // Đặt lại các trường nhập liệu
-        txtMoney.setText("");
-        txtDescription.setText("");
-        dtpDate.setDate(null);
-        selectedExpenseId = null;
-    }
-//    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {                                       
-//        // TODO add your handling code here:
-//        // Lấy dữ liệu từ các trường
-//        Date selectedDate = dtpDate.getDate();
-//        if (selectedDate == null) {
-//            JOptionPane.showMessageDialog(this, "Vui lòng chọn ngày hợp lệ!", "Thông báo", JOptionPane.WARNING_MESSAGE);
-//            return;
-//        }
-//
-//        LocalDateTime date = selectedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-//        String moneyText = txtMoney.getText();
-//        String description = txtDescription.getText();
-//
-//        // Kiểm tra ràng buộc trước khi thêm vào database
-//        if (moneyText.isEmpty() || description.isEmpty()) {
-//            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Thông báo", JOptionPane.WARNING_MESSAGE);
-//            return;
-//        }
-//
-//        // Chuyển đổi money sang double
-//        double money;
-//        try {
-//            money = Double.parseDouble(moneyText);
-//        } catch (NumberFormatException e) {
-//            JOptionPane.showMessageDialog(this, "Số tiền không hợp lệ!", "Thông báo", JOptionPane.WARNING_MESSAGE);
-//            return;
-//        }
-//
-//        // Lưu vào cơ sở dữ liệu thông qua ExpenseService
-//        expenseService.addExpense(money, description, date);  // Gọi đến service để lưu đối tượng
-//
-//        // Reset các trường văn bản
-//        txtMoney.setText("");
-//        txtDescription.setText("");
-//        dtpDate.setDate(null); // Đặt lại ngày
-//    }
-//    private void updateTable() {
-//        DefaultTableModel model = (DefaultTableModel) tblExpenditure.getModel();
-//        model.setRowCount(0); // Xóa dữ liệu hiện tại
-//
-//        for (int i = 0; i < listExpenses.size(); i++) {
-//            Expense exp = listExpenses.get(i);
-//            model.addRow(new Object[]{
-//                i + 1, exp.getOccurringDate(), exp.getMoney(), exp.getCreatedDate(), exp.getDescription()
-//            });
-//        }
-//    }
+        // Xác nhận xóa
+        int response = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this expense?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
+        if (response == JOptionPane.YES_OPTION) {
+            // Xóa expense từ cơ sở dữ liệu
+            if (selectedExpenseId != -1) {
+                expenseService.deleteExpenseById(selectedExpenseId);
+                JOptionPane.showMessageDialog(this, "Xoá thành công", "Notification", JOptionPane.INFORMATION_MESSAGE);
+                // Cập nhật lại bảng
+                loadExpensesToTable();
+
+                // Reset trạng thái các nút Update và delete
+                DisableButton();
+                selectedExpenseId = Long.valueOf(-1);
+            }
+        }
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnAdd;
-    private javax.swing.JButton btnDelete;
-    private javax.swing.JButton btnUpdate;
-    private com.toedter.calendar.JDateChooser dtpDate;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JPanel pnlExpense;
-    private javax.swing.JTable tblExpenses;
-    private javax.swing.JTextArea txtDescription;
-    private javax.swing.JTextField txtMoney;
+    private swing.Button btnAdd;
+    private swing.Button btnDelete;
+    private swing.Button btnReport;
+    private swing.Button btnUpdate;
+    private javax.swing.JLabel jLabel1;
+    private swing.PanelBorder panelBorder1;
+    private javax.swing.JScrollPane spTable;
+    private swing.Table table;
     // End of variables declaration//GEN-END:variables
 }
