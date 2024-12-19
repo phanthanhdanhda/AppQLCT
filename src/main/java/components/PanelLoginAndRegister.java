@@ -1,15 +1,10 @@
 package components;
 
-import databaseconnection.DatabaseConnection;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
@@ -19,8 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import views.MainFrame;
 import net.miginfocom.swing.MigLayout;
-import org.mindrot.jbcrypt.BCrypt;
-import session.UserSession;
+import services.AccountService;
 import swing.Button;
 import swing.MyPasswordField;
 import swing.MyTextField;
@@ -28,9 +22,11 @@ import swing.MyTextField;
 public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
 
     private JFrame parentFrame;
+    private AccountService accountService;
 
     public PanelLoginAndRegister(JFrame parentFrame) {
         this.parentFrame = parentFrame;
+        accountService = new AccountService();
         initComponents();
         initRegister();
         initLogin();
@@ -69,11 +65,11 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
                 String email = txtEmail.getText();
                 String password = new String(txtPass.getPassword());
                 try {
-                    boolean isRegistered = registerUser(username, email, password);
+                    boolean isRegistered = accountService.registerUser(username, email, password);
                     if (isRegistered) {
                         JOptionPane.showMessageDialog(null, "Registration successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
                         // Thiết lập phiên người dùng
-                        UserSession.createSession(username);
+                        //UserSession.createSession(username);
 
                         // Mở MainFrame
                         MainFrame mainFrame = new MainFrame();
@@ -84,7 +80,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
                     } else {
                         JOptionPane.showMessageDialog(null, "This email is already registered!", "Error", JOptionPane.ERROR_MESSAGE);
                     }
-                } catch (SQLException ex) {
+                } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, "Registration failed! Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
                     ex.printStackTrace();
                 }
@@ -124,11 +120,11 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
                 String email = txtEmail.getText();
                 String password = new String(txtPass.getPassword());
                 try {
-                    String username = loginUser(email, password); // Gọi phương thức đăng nhập
+                    String username = accountService.loginUser(email, password); // Gọi phương thức đăng nhập
                     if (username != null) {
                         JOptionPane.showMessageDialog(null, "Login Successful!");
                         // Thiết lập phiên người dùng
-                        UserSession.createSession(username);
+                        //UserSession.createSession(username);
 
                         // Mở MainFrame
                         MainFrame mainFrame = new MainFrame();
@@ -139,7 +135,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
                     } else {
                         JOptionPane.showMessageDialog(null, "Invalid email or password.");
                     }
-                } catch (SQLException ex) {
+                } catch (Exception ex) {
                     // Sử dụng Logger để ghi log lỗi
                     Logger.getLogger(PanelLoginAndRegister.class.getName()).log(Level.SEVERE, null, ex);
                     JOptionPane.showMessageDialog(null, "Login Failed: " + ex.getMessage());
@@ -156,53 +152,6 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
             register.setVisible(false);
             login.setVisible(true);
         }
-    }
-
-    public boolean registerUser(String username, String email, String password) throws SQLException {
-        if (isEmailExists(email)) {
-            return false; // Trả về false nếu email đã tồn tại
-        }
-
-        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-        String query = "INSERT INTO accounts (username, email, password) VALUES (?, ?, ?)";
-
-        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, username);
-            stmt.setString(2, email);
-            stmt.setString(3, hashedPassword);
-            stmt.executeUpdate();
-            return true; // Trả về true nếu đăng ký thành công
-        }
-    }
-
-    public String loginUser(String email, String password) throws SQLException {
-        String query = "SELECT username, password FROM accounts WHERE email = ?";
-        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setString(1, email);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                String storedPassword = rs.getString("password");
-                if (BCrypt.checkpw(password, storedPassword)) {
-                    return rs.getString("username"); // Trả về username khi đăng nhập thành công
-                }
-            }
-        }
-        return null; // Trả về null nếu đăng nhập thất bại
-    }
-
-    public boolean isEmailExists(String email) throws SQLException {
-        String query = "SELECT COUNT(*) FROM accounts WHERE email = ?";
-
-        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, email);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0; // Trả về true nếu số lượng > 0, tức là email đã tồn tại
-            }
-        }
-        return false; // Trả về false nếu không có email nào trùng
     }
 
     @SuppressWarnings("unchecked")
@@ -245,19 +194,6 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
 
         add(register, "card3");
     }// </editor-fold>//GEN-END:initComponents
-
-//    @Override
-//    protected void paintComponent(Graphics g) {
-//        super.paintComponent(g); // Gọi super đầu tiên
-//        Graphics2D g2 = (Graphics2D) g;
-//        GradientPaint gra = new GradientPaint(0, 0, new Color(202, 202, 44), 0, getHeight(), new Color(140, 140, 24));
-//        g2.setPaint(gra);
-//        g2.fillRect(0, 0, getWidth(), getHeight());
-//    }
-//
-//    public void addEvent(ActionListener event){
-//        this.event = event;
-//    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel login;

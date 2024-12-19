@@ -2,7 +2,7 @@ package main;
 
 import javax.persistence.EntityManager;
 import views.LoginAndRegister;
-import utils.EntityManagerSingleton;
+import utils.CustomEntityManager;
 import javax.swing.*;
 
 public class Main {
@@ -15,7 +15,7 @@ public class Main {
                 EntityManager em = null;
                 try {
                     // Khởi tạo EntityManager (mở kết nối với cơ sở dữ liệu)
-                    em = EntityManagerSingleton.getEntityManager();
+                    em = CustomEntityManager.getEntityManager();
 
                     // Khởi tạo JFrame đầu tiên (LoginAndRegister)
                     LoginAndRegister loginAndRegisterFrame = new LoginAndRegister();

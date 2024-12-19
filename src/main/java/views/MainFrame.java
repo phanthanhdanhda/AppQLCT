@@ -1,246 +1,107 @@
 package views;
 
 import components.PanelExpense;
+import components.PanelHome;
 import components.PanelReceipt;
 import components.PanelSaving;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
+import java.awt.Color;
+import javax.swing.JComponent;
+import others.EventMenuSelected;
 
 public class MainFrame extends javax.swing.JFrame {
+    
+//    private PanelHome home;
+//    private PanelExpense expense;
+//    private PanelReceipt receipt;
+//    private PanelSaving saving;
 
     public MainFrame() {
         initComponents();
-        //String username = UserSession.getInstance().getUsername();
-        //setTitle("Welcome, " + username);
+        setBackground(new Color(0, 0, 0, 0));
         setLocationRelativeTo(null);
-        setSize(800, 500);
+//        home = new PanelHome();
+//        expense = new PanelExpense();
+//        receipt = new PanelReceipt();
+//        saving = new PanelSaving();
+        menu.initMoving(MainFrame.this);
+        menu.addEventMenuSelected(new EventMenuSelected() {
+            @Override
+            public void selected(int index) {
+                if (index == 0) {
+                    setForm(new PanelHome());
+                } else if (index == 1) {
+                    setForm(new PanelExpense());
+                } else if (index == 2) {
+                    setForm(new PanelReceipt());
+                } else if (index == 3) {
+                    setForm(new PanelSaving());
+                }
+            }
+        });
+        //  set when system open start with home form
+        setForm(new PanelHome());
+    }
+    
+    private void setForm(JComponent com) {
+        mainPanel.removeAll();
+        mainPanel.add(com);
+        mainPanel.repaint();
+        mainPanel.revalidate();
     }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jSeparator6 = new javax.swing.JSeparator();
-        tbMain = new javax.swing.JToolBar();
-        btnAddExp = new javax.swing.JButton();
-        jSeparator1 = new javax.swing.JToolBar.Separator();
-        btnAddRec = new javax.swing.JButton();
-        jSeparator2 = new javax.swing.JToolBar.Separator();
-        jButton1 = new javax.swing.JButton();
-        jSeparator7 = new javax.swing.JToolBar.Separator();
-        btnLock = new javax.swing.JButton();
-        jSeparator5 = new javax.swing.JToolBar.Separator();
-        btnCloseTab = new javax.swing.JButton();
-        tpMain = new javax.swing.JTabbedPane();
-        pnlHome = new javax.swing.JPanel();
-        mnbMain = new javax.swing.JMenuBar();
-        menuAccount = new javax.swing.JMenu();
-        mitLogin = new javax.swing.JMenuItem();
-        mitRegister = new javax.swing.JMenuItem();
-        jSeparator4 = new javax.swing.JPopupMenu.Separator();
-        mitSettings = new javax.swing.JMenuItem();
-        jSeparator3 = new javax.swing.JPopupMenu.Separator();
-        mitExit = new javax.swing.JMenuItem();
-        menuManage = new javax.swing.JMenu();
-        mitExpenditures = new javax.swing.JMenuItem();
-        mitReceipts = new javax.swing.JMenuItem();
-        mitSavings = new javax.swing.JMenuItem();
-        menuHelp = new javax.swing.JMenu();
-        mitContent = new javax.swing.JMenuItem();
-        mitAboutUs = new javax.swing.JMenuItem();
+        panelBorder1 = new swing.PanelBorder();
+        menu = new components.Menu();
+        header2 = new components.Header();
+        mainPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(760, 450));
-        setSize(new java.awt.Dimension(760, 400));
+        setUndecorated(true);
 
-        tbMain.setBackground(new java.awt.Color(255, 255, 255));
-        tbMain.setRollover(true);
+        mainPanel.setBackground(new java.awt.Color(255, 255, 255));
+        mainPanel.setOpaque(false);
+        mainPanel.setLayout(new java.awt.BorderLayout());
 
-        btnAddExp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/add_create_new_32.png"))); // NOI18N
-        btnAddExp.setText("Add Expense");
-        btnAddExp.setFocusable(false);
-        btnAddExp.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnAddExp.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnAddExp.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAddExpActionPerformed(evt);
-            }
-        });
-        tbMain.add(btnAddExp);
-        tbMain.add(jSeparator1);
-
-        btnAddRec.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/add_create_new_32.png"))); // NOI18N
-        btnAddRec.setText("Add Receipt");
-        btnAddRec.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnAddRec.setPreferredSize(new java.awt.Dimension(90, 62));
-        btnAddRec.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnAddRec.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAddRecActionPerformed(evt);
-            }
-        });
-        tbMain.add(btnAddRec);
-        tbMain.add(jSeparator2);
-
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/add_create_new_32.png"))); // NOI18N
-        jButton1.setText("Add Saving");
-        jButton1.setFocusable(false);
-        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-        tbMain.add(jButton1);
-        tbMain.add(jSeparator7);
-
-        btnLock.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/lock_security_close_protection_32.png"))); // NOI18N
-        btnLock.setText("Lock");
-        btnLock.setFocusable(false);
-        btnLock.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnLock.setMinimumSize(new java.awt.Dimension(60, 62));
-        btnLock.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        tbMain.add(btnLock);
-        tbMain.add(jSeparator5);
-
-        btnCloseTab.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/exit_logout_sign out_32.png"))); // NOI18N
-        btnCloseTab.setText("Close Tab");
-        btnCloseTab.setFocusable(false);
-        btnCloseTab.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnCloseTab.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnCloseTab.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCloseTabActionPerformed(evt);
-            }
-        });
-        tbMain.add(btnCloseTab);
-
-        tpMain.setBackground(new java.awt.Color(255, 255, 255));
-
-        pnlHome.setPreferredSize(new java.awt.Dimension(760, 315));
-
-        javax.swing.GroupLayout pnlHomeLayout = new javax.swing.GroupLayout(pnlHome);
-        pnlHome.setLayout(pnlHomeLayout);
-        pnlHomeLayout.setHorizontalGroup(
-            pnlHomeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 758, Short.MAX_VALUE)
+        javax.swing.GroupLayout panelBorder1Layout = new javax.swing.GroupLayout(panelBorder1);
+        panelBorder1.setLayout(panelBorder1Layout);
+        panelBorder1Layout.setHorizontalGroup(
+            panelBorder1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelBorder1Layout.createSequentialGroup()
+                .addComponent(menu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addGroup(panelBorder1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(header2, javax.swing.GroupLayout.PREFERRED_SIZE, 904, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(panelBorder1Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())))
         );
-        pnlHomeLayout.setVerticalGroup(
-            pnlHomeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 311, Short.MAX_VALUE)
+        panelBorder1Layout.setVerticalGroup(
+            panelBorder1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(menu, javax.swing.GroupLayout.DEFAULT_SIZE, 650, Short.MAX_VALUE)
+            .addGroup(panelBorder1Layout.createSequentialGroup()
+                .addComponent(header2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
-
-        tpMain.addTab("Home", pnlHome);
-
-        menuAccount.setText("Account");
-
-        mitLogin.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/login_signin_20.png"))); // NOI18N
-        mitLogin.setText("Login");
-        menuAccount.add(mitLogin);
-
-        mitRegister.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/signup_register_20.png"))); // NOI18N
-        mitRegister.setText("Register");
-        menuAccount.add(mitRegister);
-        menuAccount.add(jSeparator4);
-
-        mitSettings.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/settings_20.png"))); // NOI18N
-        mitSettings.setText("Settings");
-        menuAccount.add(mitSettings);
-        menuAccount.add(jSeparator3);
-
-        mitExit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/exit_logout_signout_20.png"))); // NOI18N
-        mitExit.setText("Exit");
-        menuAccount.add(mitExit);
-
-        mnbMain.add(menuAccount);
-
-        menuManage.setText("Manage");
-
-        mitExpenditures.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/expenditure_20.png"))); // NOI18N
-        mitExpenditures.setText("Expeneses");
-        menuManage.add(mitExpenditures);
-
-        mitReceipts.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/receipt_20.png"))); // NOI18N
-        mitReceipts.setText("Receipts");
-        menuManage.add(mitReceipts);
-
-        mitSavings.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/saving_20.png"))); // NOI18N
-        mitSavings.setText("Savings");
-        menuManage.add(mitSavings);
-
-        mnbMain.add(menuManage);
-
-        menuHelp.setText("Help");
-
-        mitContent.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/help_20.png"))); // NOI18N
-        mitContent.setText("Content");
-        menuHelp.add(mitContent);
-
-        mitAboutUs.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/info_20.png"))); // NOI18N
-        mitAboutUs.setText("About us");
-        menuHelp.add(mitAboutUs);
-
-        mnbMain.add(menuHelp);
-
-        setJMenuBar(mnbMain);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(tbMain, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(tpMain)
+            .addComponent(panelBorder1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(tbMain, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tpMain))
+            .addComponent(panelBorder1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btnAddExpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddExpActionPerformed
-        // TODO add your handling code here:
-        JScrollPane scrp = new JScrollPane(new PanelExpense());
-        tpMain.add("Add Expense", scrp);
-        tpMain.revalidate(); // Cập nhật lại bố cục để hiển thị tab mới
-        tpMain.repaint(); // Vẽ lại để đảm bảo giao diện đã được cập nhật
-    }//GEN-LAST:event_btnAddExpActionPerformed
-
-    private void btnAddRecActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddRecActionPerformed
-        // TODO add your handling code here:
-        JScrollPane scrp = new JScrollPane(new PanelReceipt());
-        tpMain.add("Add Receipt", scrp);
-        tpMain.revalidate(); // Cập nhật lại bố cục để hiển thị tab mới
-        tpMain.repaint(); // Vẽ lại để đảm bảo giao diện đã được cập nhật
-    }//GEN-LAST:event_btnAddRecActionPerformed
-
-    private void btnCloseTabActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseTabActionPerformed
-        // TODO add your handling code here:
-        // Lấy chỉ số của tab đang được chọn
-        int selectedIndex = tpMain.getSelectedIndex();
-
-        // Nếu có tab đang được chọn
-        if (selectedIndex != -1) {
-            // Đóng (hoặc loại bỏ) tab hiện tại
-            tpMain.remove(selectedIndex);
-        } else {
-            // Thông báo nếu không có tab nào được chọn
-            JOptionPane.showMessageDialog(this, "No tab selected to close!");
-        }
-    }//GEN-LAST:event_btnCloseTabActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        JScrollPane scrp = new JScrollPane(new PanelSaving());
-        tpMain.add("Add Saving", scrp);
-        tpMain.revalidate(); // Cập nhật lại bố cục để hiển thị tab mới
-        tpMain.repaint(); // Vẽ lại để đảm bảo giao diện đã được cập nhật
-    }//GEN-LAST:event_jButton1ActionPerformed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -265,6 +126,9 @@ public class MainFrame extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -275,33 +139,9 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnAddExp;
-    private javax.swing.JButton btnAddRec;
-    private javax.swing.JButton btnCloseTab;
-    private javax.swing.JButton btnLock;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JToolBar.Separator jSeparator1;
-    private javax.swing.JToolBar.Separator jSeparator2;
-    private javax.swing.JPopupMenu.Separator jSeparator3;
-    private javax.swing.JPopupMenu.Separator jSeparator4;
-    private javax.swing.JToolBar.Separator jSeparator5;
-    private javax.swing.JSeparator jSeparator6;
-    private javax.swing.JToolBar.Separator jSeparator7;
-    private javax.swing.JMenu menuAccount;
-    private javax.swing.JMenu menuHelp;
-    private javax.swing.JMenu menuManage;
-    private javax.swing.JMenuItem mitAboutUs;
-    private javax.swing.JMenuItem mitContent;
-    private javax.swing.JMenuItem mitExit;
-    private javax.swing.JMenuItem mitExpenditures;
-    private javax.swing.JMenuItem mitLogin;
-    private javax.swing.JMenuItem mitReceipts;
-    private javax.swing.JMenuItem mitRegister;
-    private javax.swing.JMenuItem mitSavings;
-    private javax.swing.JMenuItem mitSettings;
-    private javax.swing.JMenuBar mnbMain;
-    private javax.swing.JPanel pnlHome;
-    private javax.swing.JToolBar tbMain;
-    private javax.swing.JTabbedPane tpMain;
+    private components.Header header2;
+    private javax.swing.JPanel mainPanel;
+    private components.Menu menu;
+    private swing.PanelBorder panelBorder1;
     // End of variables declaration//GEN-END:variables
 }

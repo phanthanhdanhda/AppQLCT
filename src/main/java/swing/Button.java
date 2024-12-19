@@ -41,14 +41,18 @@ public class Button extends JButton {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent me) {
-                targetSize = Math.max(getWidth(), getHeight()) * 2;
-                animatSize = 0;
-                pressedPoint = me.getPoint();
-                alpha = 0.5f;
-                if (animator.isRunning()) {
-                    animator.stop();
+                if (Button.this.isEnabled()) {
+                    targetSize = Math.max(getWidth(), getHeight()) * 2;
+                    animatSize = 0;
+                    pressedPoint = me.getPoint();
+                    alpha = 0.5f;
+
+                    // Dừng hoạt động nếu animator đang chạy và bắt đầu lại
+                    if (animator.isRunning()) {
+                        animator.stop();
+                    }
+                    animator.start();
                 }
-                animator.start();
             }
         });
         TimingTarget target = new TimingTargetAdapter() {
@@ -70,19 +74,19 @@ public class Button extends JButton {
     @Override
     protected void paintComponent(Graphics grphcs) {
         int width = getWidth();
-        int height = getHeight();
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = img.createGraphics();
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setColor(getBackground());
-        g2.fillRoundRect(0, 0, width, height, height, height);
-        if (pressedPoint != null) {
-            g2.setColor(effectColor);
-            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, alpha));
-            g2.fillOval((int) (pressedPoint.x - animatSize / 2), (int) (pressedPoint.y - animatSize / 2), (int) animatSize, (int) animatSize);
-        }
-        g2.dispose();
-        grphcs.drawImage(img, 0, 0, null);
-        super.paintComponent(grphcs);
+            int height = getHeight();
+            BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2 = img.createGraphics();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(getBackground());
+            g2.fillRoundRect(0, 0, width, height, height, height);
+            if (pressedPoint != null) {
+                g2.setColor(effectColor);
+                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, alpha));
+                g2.fillOval((int) (pressedPoint.x - animatSize / 2), (int) (pressedPoint.y - animatSize / 2), (int) animatSize, (int) animatSize);
+            }
+            g2.dispose();
+            grphcs.drawImage(img, 0, 0, null);
+            super.paintComponent(grphcs);
     }
 }

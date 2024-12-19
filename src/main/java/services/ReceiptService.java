@@ -6,14 +6,13 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
-import models.Expense;
 import models.Receipt;
-import repositories.JpaUtil;
+import utils.CustomEntityManager;
 
 @Service
 public class ReceiptService {
     public void addReceipt(Double money, String description, LocalDate occurringDate) {
-        EntityManager em = JpaUtil.getEntityManager();
+        EntityManager em = CustomEntityManager.getEntityManager();
         EntityTransaction transaction = em.getTransaction();
 
         try {
@@ -32,7 +31,7 @@ public class ReceiptService {
     }
 
     public List<Receipt> getAllReceipts() {
-        EntityManager em = JpaUtil.getEntityManager();
+        EntityManager em = CustomEntityManager.getEntityManager();
 
         try {
             // Sử dụng JPQL để lấy tất cả các Expense từ cơ sở dữ liệu
@@ -48,7 +47,7 @@ public class ReceiptService {
     }
 
     public Receipt getReceiptById(Long id) {
-        EntityManager em = JpaUtil.getEntityManager();
+        EntityManager em = CustomEntityManager.getEntityManager();
 
         try {
             return em.find(Receipt.class, id);  // Tìm đối tượng Receipt theo ID
@@ -57,7 +56,7 @@ public class ReceiptService {
         }
     }
     public void deleteReceiptById(Long id) {
-        EntityManager em = JpaUtil.getEntityManager();
+        EntityManager em = CustomEntityManager.getEntityManager();
         try {
             em.getTransaction().begin();
             Receipt receipt = em.find(Receipt.class, id);
@@ -74,7 +73,7 @@ public class ReceiptService {
     }
 
     public Receipt updateReceipt(Long id, Double money, String description, LocalDate occurringDate) {
-        EntityManager em = JpaUtil.getEntityManager();
+        EntityManager em = CustomEntityManager.getEntityManager();
         Receipt updatedReceipt = null;
         try {
             em.getTransaction().begin();

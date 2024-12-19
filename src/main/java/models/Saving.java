@@ -16,6 +16,9 @@ public class Saving {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
+    @Column(name = "target_description")
+    private String targetDescription;
 
     @Column(name = "target_amount")
     private Double targetAmount;
@@ -32,16 +35,22 @@ public class Saving {
     public Saving() {
     }
 
-    public Saving(Double targetAmount, Double currentAmount, LocalDate targetDate) {
+    public Saving(String targetDescription, Double targetAmount, Double currentAmount, LocalDate targetDate) {
+        this.id = id;
+        this.targetDescription = targetDescription;
         this.targetAmount = targetAmount;
         this.currentAmount = currentAmount;
         this.targetDate = targetDate;
-        this.createdDate = LocalDateTime.now();
+        this.createdDate = LocalDateTime.now();  // Thời gian hiện tại
     }
 
     //Getters
     public Long getId() {
         return id;
+    }
+
+    public String getTargetDescription() {
+        return targetDescription;
     }
 
     public Double getTargetAmount() {
@@ -63,6 +72,10 @@ public class Saving {
     //Setters
     public void setTargetAmount(Double targetAmount) {
         this.targetAmount = targetAmount;
+    }
+
+    public void setTargetDescription(String targetDescription) {
+        this.targetDescription = targetDescription;
     }
 
     public void setCurrentAmount(Double currentAmount) {
