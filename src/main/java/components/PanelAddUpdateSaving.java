@@ -168,7 +168,7 @@ public class PanelAddUpdateSaving extends javax.swing.JPanel {
         // TODO add your handling code here:
         Date selectedDate = dtpDate.getDate();
         if (selectedDate == null) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn ngày hợp lệ!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select a valid date!", "Noitfication", JOptionPane.WARNING_MESSAGE);
             return;
         }
         LocalDate date = selectedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -183,7 +183,7 @@ public class PanelAddUpdateSaving extends javax.swing.JPanel {
 
         // Kiểm tra ràng buộc trước khi thêm vào database
         if (target.isEmpty() || description.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please fill in all fields!", "Noitfication", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -192,13 +192,13 @@ public class PanelAddUpdateSaving extends javax.swing.JPanel {
         try {
             tmpTarget = Double.parseDouble(target);
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Số tiền không hợp lệ!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Invalid amount!", "Notification", JOptionPane.WARNING_MESSAGE);
             return;
         }
         try {
             tmpCurrent = Double.parseDouble(current);
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Số tiền không hợp lệ!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Invalid amount!", "Notification", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -206,11 +206,11 @@ public class PanelAddUpdateSaving extends javax.swing.JPanel {
         if (selectedSavingId == -1) {
             // Thêm mới
             savingService.addSaving(description, tmpTarget, tmpCurrent, date);
-            JOptionPane.showMessageDialog(this, "Thêm thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Added successfully!", "Notification", JOptionPane.INFORMATION_MESSAGE);
         } else {
             // Cập nhật
             savingService.updateSaving(selectedSavingId, description, tmpTarget, tmpCurrent, date);
-            JOptionPane.showMessageDialog(this, "Cập nhật thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Updated successfuly!", "Notification", JOptionPane.INFORMATION_MESSAGE);
         }
         parentDialog.dispose();
     }//GEN-LAST:event_btnConfirmActionPerformed

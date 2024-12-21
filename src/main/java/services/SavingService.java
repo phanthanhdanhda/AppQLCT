@@ -33,7 +33,7 @@ public class SavingService {
 
         try {
             // Sử dụng JPQL để lấy tất cả các Saving từ cơ sở dữ liệu
-            String jpql = "SELECT s FROM Saving s";
+            String jpql = "SELECT s FROM Saving s ORDER BY s.targetDate ASC";
             Query query = em.createQuery(jpql);
 
             // Thực thi truy vấn và lấy kết quả

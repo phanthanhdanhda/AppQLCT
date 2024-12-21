@@ -319,7 +319,7 @@ public class PanelExpense extends javax.swing.JPanel {
             // Xóa expense từ cơ sở dữ liệu
             if (selectedExpenseId != -1) {
                 expenseService.deleteExpenseById(selectedExpenseId);
-                JOptionPane.showMessageDialog(this, "Xoá thành công", "Notification", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Deleted successfully!", "Notification", JOptionPane.INFORMATION_MESSAGE);
                 // Cập nhật lại bảng
                 loadExpensesToTable();
 

@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
 import views.MainFrame;
 import net.miginfocom.swing.MigLayout;
 import services.AccountService;
+import session.UserSession;
 import swing.Button;
 import swing.MyPasswordField;
 import swing.MyTextField;
@@ -65,11 +66,11 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
                 String email = txtEmail.getText();
                 String password = new String(txtPass.getPassword());
                 try {
-                    boolean isRegistered = accountService.registerUser(username, email, password);
+                    boolean isRegistered = accountService.registerUser(email, username, password);
                     if (isRegistered) {
                         JOptionPane.showMessageDialog(null, "Registration successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
                         // Thiết lập phiên người dùng
-                        //UserSession.createSession(username);
+                        UserSession.createSession(email, username);
 
                         // Mở MainFrame
                         MainFrame mainFrame = new MainFrame();
@@ -121,10 +122,10 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
                 String password = new String(txtPass.getPassword());
                 try {
                     String username = accountService.loginUser(email, password); // Gọi phương thức đăng nhập
-                    if (username != null) {
+                    if (email != null) {
                         JOptionPane.showMessageDialog(null, "Login Successful!");
                         // Thiết lập phiên người dùng
-                        //UserSession.createSession(username);
+                        UserSession.createSession(email, username);
 
                         // Mở MainFrame
                         MainFrame mainFrame = new MainFrame();

@@ -3,18 +3,20 @@ package components;
 import java.awt.Color;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import models.Model_Card;
-import models.RecordType;
-import swing.ScrollBar;
+import session.UserSession;
 
 public class PanelHome extends javax.swing.JPanel {
 
     public PanelHome() {
         initComponents();
-        card1.setData(new Model_Card(new ImageIcon(getClass().getResource("/icons/stock.png")), "Stock Total", "$200000", "Increased by 60%"));
-        card2.setData(new Model_Card(new ImageIcon(getClass().getResource("/icons/profit.png")), "Total Profit", "$15000", "Increased by 25%"));
-        card3.setData(new Model_Card(new ImageIcon(getClass().getResource("/icons/flag.png")), "Unique Visitors", "$300000", "Increased by 70%"));
+        UserSession session = UserSession.getInstance();
+        // Lấy tên người dùng từ phiên hiện tại
+        String username = session.getUsernameFromSession();
+        lbWelcome.setText("Welcome " + username);
+        card1.setData(new Model_Card(new ImageIcon(getClass().getResource("/icons/stock.png")), "Expenese Total", "$200000", "Increased by 60%"));
+        card2.setData(new Model_Card(new ImageIcon(getClass().getResource("/icons/profit.png")), "Receipt Profit", "$15000", "Increased by 25%"));
+        card3.setData(new Model_Card(new ImageIcon(getClass().getResource("/icons/flag.png")), "Summary", "$300000", "Increased by 70%"));
         //  add row table
 //        spTable.setVerticalScrollBar(new ScrollBar());
 //        spTable.getVerticalScrollBar().setBackground(Color.WHITE);
@@ -32,7 +34,7 @@ public class PanelHome extends javax.swing.JPanel {
         card1 = new components.Card();
         card2 = new components.Card();
         card3 = new components.Card();
-        jLabel2 = new javax.swing.JLabel();
+        lbWelcome = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(255, 255, 255));
 
@@ -50,10 +52,10 @@ public class PanelHome extends javax.swing.JPanel {
         card3.setColor2(new java.awt.Color(211, 184, 61));
         panel.add(card3);
 
-        jLabel2.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel2.setFont(new java.awt.Font("SansSerif", 1, 36)); // NOI18N
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("WELCOME");
+        lbWelcome.setBackground(new java.awt.Color(255, 255, 255));
+        lbWelcome.setFont(new java.awt.Font("SansSerif", 1, 36)); // NOI18N
+        lbWelcome.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lbWelcome.setText("WELCOME");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -65,14 +67,14 @@ public class PanelHome extends javax.swing.JPanel {
                 .addGap(17, 17, 17))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lbWelcome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(48, 48, 48)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lbWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 125, Short.MAX_VALUE)
                 .addComponent(panel, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(62, 62, 62))
@@ -84,7 +86,7 @@ public class PanelHome extends javax.swing.JPanel {
     private components.Card card1;
     private components.Card card2;
     private components.Card card3;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel lbWelcome;
     private javax.swing.JLayeredPane panel;
     // End of variables declaration//GEN-END:variables
 }

@@ -31,9 +31,9 @@ public class Menu extends javax.swing.JPanel {
     private void init() {
         listMenu1.addItem(new Model_Menu("menu", "Home", Model_Menu.MenuType.MENU));
         listMenu1.addItem(new Model_Menu("", "", Model_Menu.MenuType.EMPTY));
-        listMenu1.addItem(new Model_Menu("expenditure_20", "Receipt", Model_Menu.MenuType.MENU));
+        listMenu1.addItem(new Model_Menu("expenditure_20", "Expense", Model_Menu.MenuType.MENU));
         listMenu1.addItem(new Model_Menu("", "", Model_Menu.MenuType.EMPTY));
-        listMenu1.addItem(new Model_Menu("receipt_20", "receipt", Model_Menu.MenuType.MENU));
+        listMenu1.addItem(new Model_Menu("receipt_20", "Receipt", Model_Menu.MenuType.MENU));
         listMenu1.addItem(new Model_Menu("", " ", Model_Menu.MenuType.EMPTY));
         listMenu1.addItem(new Model_Menu("saving_20", "Saving", Model_Menu.MenuType.MENU));
         listMenu1.addItem(new Model_Menu("", "", Model_Menu.MenuType.EMPTY));
@@ -58,10 +58,11 @@ public class Menu extends javax.swing.JPanel {
         panelMoving.setOpaque(false);
 
         jTextField.setBackground(new java.awt.Color(255, 255, 255));
-        jTextField.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jTextField.setForeground(new java.awt.Color(255, 255, 255));
-        jTextField.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/logo.png"))); // NOI18N
-        jTextField.setText("APPLICATION");
+        jTextField.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
+        jTextField.setForeground(new java.awt.Color(51, 51, 51));
+        jTextField.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jTextField.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/logo_48.png"))); // NOI18N
+        jTextField.setText("Application");
 
         javax.swing.GroupLayout panelMovingLayout = new javax.swing.GroupLayout(panelMoving);
         panelMoving.setLayout(panelMovingLayout);
@@ -103,7 +104,7 @@ public class Menu extends javax.swing.JPanel {
     protected void paintChildren(Graphics grphcs) {
         Graphics2D g2 = (Graphics2D) grphcs;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        GradientPaint g = new GradientPaint(0, 0, Color.decode("#1CB5E0"), 0, getHeight(), Color.decode("#000046"));
+        GradientPaint g = new GradientPaint(0, 0, Color.decode("#1ce0ac"), 0, getHeight(), Color.decode("#002b46"));
         g2.setPaint(g);
         g2.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
         g2.fillRect(getWidth() - 20, 0, getWidth(), getHeight());

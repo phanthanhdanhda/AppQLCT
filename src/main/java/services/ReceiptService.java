@@ -35,7 +35,7 @@ public class ReceiptService {
 
         try {
             // Sử dụng JPQL để lấy tất cả các Expense từ cơ sở dữ liệu
-            String jpql = "SELECT r FROM Receipt r";
+            String jpql = "SELECT r FROM Receipt r ORDER BY r.occurringDate ASC";
             Query query = em.createQuery(jpql);
 
             // Thực thi truy vấn và lấy kết quả

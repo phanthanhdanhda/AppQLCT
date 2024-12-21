@@ -156,7 +156,7 @@ public class PanelAddUpdateReceipt extends javax.swing.JPanel {
         // TODO add your handling code here:
         Date selectedDate = dtpDate.getDate();
         if (selectedDate == null) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn ngày hợp lệ!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select a valid date!", "Noitfication", JOptionPane.WARNING_MESSAGE);
             return;
         }
         LocalDate date = selectedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -191,7 +191,7 @@ public class PanelAddUpdateReceipt extends javax.swing.JPanel {
         } else {
             // Cập nhật
             expenseService.updateReceipt(selectedReceiptId, money, description, date);
-            JOptionPane.showMessageDialog(this, "Update successfully!", "Noitfication", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Updated successfully!", "Noitfication", JOptionPane.INFORMATION_MESSAGE);
         }
         parentDialog.dispose();
     }//GEN-LAST:event_btnConfirmActionPerformed

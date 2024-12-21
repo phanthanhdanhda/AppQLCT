@@ -10,7 +10,7 @@ import utils.CustomEntityManager;
 
 public class AccountService {
 
-    public boolean registerUser(String username, String email, String password) {
+    public boolean registerUser(String email, String username, String password) {
         EntityManager em = CustomEntityManager.getEntityManager();        // Tạo mới EntityManager
         EntityTransaction transaction = em.getTransaction();
 
@@ -29,7 +29,7 @@ public class AccountService {
             String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
 
             // Tạo và lưu tài khoản mới
-            Account account = new Account(username, email, hashedPassword);
+            Account account = new Account(email, username, hashedPassword);
             transaction.begin();
             em.persist(account); // Lưu vào cơ sở dữ liệu
             transaction.commit();

@@ -314,7 +314,7 @@ public class PanelReceipt extends javax.swing.JPanel {
             // Xóa receipt từ cơ sở dữ liệu
             if (selectedReceiptId != -1) {
                 receiptService.deleteReceiptById(selectedReceiptId);
-                JOptionPane.showMessageDialog(this, "Xoá thành công", "Notification", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Deleted successfully!", "Notification", JOptionPane.INFORMATION_MESSAGE);
                 // Cập nhật lại bảng
                 loadReceiptsToTable();
 

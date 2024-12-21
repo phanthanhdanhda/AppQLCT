@@ -36,7 +36,7 @@ public class ExpenseService {
 
         try {
             // Sử dụng JPQL để lấy tất cả các Expense từ cơ sở dữ liệu
-            String jpql = "SELECT e FROM Expense e";
+            String jpql = "SELECT e FROM Expense e ORDER BY e.occurringDate ASC";
             Query query = em.createQuery(jpql);
 
             // Thực thi truy vấn và lấy kết quả

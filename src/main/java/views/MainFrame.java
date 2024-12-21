@@ -15,6 +15,7 @@ public class MainFrame extends javax.swing.JFrame {
 //    private PanelExpense expense;
 //    private PanelReceipt receipt;
 //    private PanelSaving saving;
+    
     public MainFrame() {
         initComponents();
         setBackground(new Color(0, 0, 0, 0));
@@ -36,9 +37,12 @@ public class MainFrame extends javax.swing.JFrame {
                 } else if (index == 6) {
                     setForm(new PanelSaving());
                 } else if (index == 10) {
-                    setForm(new PanelSetting());
-                } else if (index == 12){
-                    System.exit(0);
+                    setForm(new PanelSetting(getFrame()));
+                } else if (index == 12) {
+                    setVisible(false);
+                    // Tạo và hiển thị lại cửa sổ đăng nhập
+                    LoginAndRegister loginandresister = new LoginAndRegister();  // Giả sử bạn có lớp LoginFrame
+                    loginandresister.setVisible(true);  // Hiển thị cửa sổ đăng nhập
                 }
             }
         });
@@ -46,6 +50,9 @@ public class MainFrame extends javax.swing.JFrame {
         setForm(new PanelHome());
     }
 
+    private MainFrame getFrame(){
+        return this;
+    }
     private void setForm(JComponent com) {
         mainPanel.removeAll();
         mainPanel.add(com);

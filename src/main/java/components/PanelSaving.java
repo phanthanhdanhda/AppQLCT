@@ -322,7 +322,7 @@ public class PanelSaving extends javax.swing.JPanel {
             // Xóa saving từ cơ sở dữ liệu
             if (selectedSavingId != -1) {
                 savingService.deleteSavingById(selectedSavingId);
-                JOptionPane.showMessageDialog(this, "Xoá thành công", "Notification", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Deleted successfully!", "Notification", JOptionPane.INFORMATION_MESSAGE);
                 // Cập nhật lại bảng
                 loadSavingsToTable();
 
