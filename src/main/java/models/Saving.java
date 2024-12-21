@@ -4,9 +4,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -31,17 +34,23 @@ public class Saving {
 
     @Column(name = "created_date")
     private LocalDateTime createdDate;
+    
+    // Liên kết với Account (một tài khoản có thể có nhiều chi tiêu)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_email", referencedColumnName = "email") // Trường khóa ngoại liên kết với Account
+    private Account account;
 
     public Saving() {
     }
 
-    public Saving(String targetDescription, Double targetAmount, Double currentAmount, LocalDate targetDate) {
+    public Saving(String targetDescription, Double targetAmount, Double currentAmount, LocalDate targetDate, Account account) {
         this.id = id;
         this.targetDescription = targetDescription;
         this.targetAmount = targetAmount;
         this.currentAmount = currentAmount;
         this.targetDate = targetDate;
         this.createdDate = LocalDateTime.now();  // Thời gian hiện tại
+        this.account = account;
     }
 
     //Getters
@@ -90,4 +99,11 @@ public class Saving {
         this.createdDate = createdDate;
     }
 
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
 }

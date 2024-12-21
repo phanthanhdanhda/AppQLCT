@@ -6,19 +6,20 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
+import models.Account;
 import models.Expense;
 import utils.CustomEntityManager;
 
 @Service
 public class ExpenseService {
 
-    public void addExpense(Double money, String description, LocalDate occurringDate) {
+    public void addExpense(Double money, String description, LocalDate occurringDate, Account account) {
         EntityManager em = CustomEntityManager.getEntityManager();
         EntityTransaction transaction = em.getTransaction();
 
         try {
             transaction.begin();
-            Expense expense = new Expense(money, description, occurringDate);
+            Expense expense = new Expense(money, description, occurringDate, account);
             em.persist(expense);  // Lưu vào cơ sở dữ liệu
             transaction.commit();
         } catch (RuntimeException e) {
@@ -31,17 +32,22 @@ public class ExpenseService {
         }
     }
 
-    public List<Expense> getAllExpenses() {
+    public List<Expense> getAllExpenses(String email) {
         EntityManager em = CustomEntityManager.getEntityManager();
 
         try {
             // Sử dụng JPQL để lấy tất cả các Expense từ cơ sở dữ liệu
-            String jpql = "SELECT e FROM Expense e ORDER BY e.occurringDate ASC";
+            String jpql = "SELECT e FROM Expense e WHERE e.account.email = :email ORDER BY e.occurringDate ASC";
             Query query = em.createQuery(jpql);
+
+            // Gán giá trị cho tham số 'email'
+            query.setParameter("email", email); // Gán giá trị email vào truy vấn
 
             // Thực thi truy vấn và lấy kết quả
             List<Expense> expenses = query.getResultList();
             return expenses;
+        } catch (Exception ex) {
+            return null;
         } finally {
             em.close();
         }

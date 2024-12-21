@@ -4,8 +4,10 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
+import javax.persistence.TypedQuery;
 import models.Account;
 import org.mindrot.jbcrypt.BCrypt;
+import session.UserSession;
 import utils.CustomEntityManager;
 
 public class AccountService {
@@ -74,4 +76,28 @@ public class AccountService {
         }
     }
 
+    // Phương thức truy vấn Account theo email
+    public Account getAccountByEmail(String email) {
+        EntityManager em = CustomEntityManager.getEntityManager();
+
+        try {
+            TypedQuery<Account> query = em.createQuery(
+                    "SELECT a FROM Account a WHERE a.email = :email", Account.class);
+            query.setParameter("email", email);
+            return query.getSingleResult(); // Trả về đối tượng Account duy nhất
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // Trả về null nếu không tìm thấy hoặc lỗi
+        } finally {
+            em.close();
+        }
+    }
+
+    // Phương thức lấy tài khoản từ session (theo email)
+    public Account getAccountFromSession(String email) {
+        if (email != null) {
+            return getAccountByEmail(email); // Sử dụng phương thức truy vấn theo email để lấy tài khoản
+        }
+        return null; // Trả về null nếu email không tồn tại trong session
+    }
 }

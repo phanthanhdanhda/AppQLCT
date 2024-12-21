@@ -9,7 +9,10 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
+import models.Account;
+import services.AccountService;
 import services.ExpenseService;
+import session.UserSession;
 
 public class PanelAddUpdateExpense extends javax.swing.JPanel {
 
@@ -17,12 +20,14 @@ public class PanelAddUpdateExpense extends javax.swing.JPanel {
     private Object[] expenseData;
     private TableModel tableModel;
     private ExpenseService expenseService;
+    private AccountService accountService;
     private Long selectedExpenseId = Long.valueOf(-1);
 
     public PanelAddUpdateExpense(String title, JDialog _parentDialog, Object[] _expenseData, TableModel _tableModel) throws ParseException {
         initComponents();
         this.expenseService = new ExpenseService();
         this.parentDialog = _parentDialog;
+        accountService = new AccountService();
         lbLabel.setText(title);
         this.setVisible(true);
         expenseData = _expenseData;
@@ -154,6 +159,8 @@ public class PanelAddUpdateExpense extends javax.swing.JPanel {
 
     private void btnConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmActionPerformed
         // TODO add your handling code here:
+        UserSession session = UserSession.getInstance();
+        String email = session.getEmail(); // Lấy email từ session
         Date selectedDate = dtpDate.getDate();
         if (selectedDate == null) {
             JOptionPane.showMessageDialog(this, "Please select a valid time!", "Noitfication", JOptionPane.WARNING_MESSAGE);
@@ -162,6 +169,8 @@ public class PanelAddUpdateExpense extends javax.swing.JPanel {
         LocalDate date = selectedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         String description = txtDescription.getText();
         String amount = txtAmount.getText();
+        
+        Account account = accountService.getAccountFromSession(email);
 
         if (description.isEmpty() || amount.isEmpty()) {
             JOptionPane.showMessageDialog(parentDialog, "Please fill in all fields!", "Error", JOptionPane.ERROR_MESSAGE);
@@ -186,7 +195,7 @@ public class PanelAddUpdateExpense extends javax.swing.JPanel {
         // Kiểm tra xem có đang cập nhật hay thêm mới
         if (selectedExpenseId == -1) {
             // Thêm mới
-            expenseService.addExpense(money, description, date);
+            expenseService.addExpense(money, description, date, account);
             JOptionPane.showMessageDialog(this, "Added successfully!", "Noitfication", JOptionPane.INFORMATION_MESSAGE);
         } else {
             // Cập nhật

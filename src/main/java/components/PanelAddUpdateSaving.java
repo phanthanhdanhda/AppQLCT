@@ -9,7 +9,10 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
+import models.Account;
+import services.AccountService;
 import services.SavingService;
+import session.UserSession;
 
 public class PanelAddUpdateSaving extends javax.swing.JPanel {
 
@@ -17,10 +20,12 @@ public class PanelAddUpdateSaving extends javax.swing.JPanel {
     private Object[] savingData;
     private TableModel tableModel;
     private SavingService savingService;
+    private AccountService accountService;
     private Long selectedSavingId = Long.valueOf(-1);
 
     public PanelAddUpdateSaving(String title, JDialog _parentDialog, Object[] _savingData, TableModel _tableModel) throws ParseException {
         initComponents();
+        accountService = new AccountService();
         this.savingService = new SavingService();
         this.parentDialog = _parentDialog;
         lbLabel.setText(title);
@@ -166,6 +171,8 @@ public class PanelAddUpdateSaving extends javax.swing.JPanel {
 
     private void btnConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmActionPerformed
         // TODO add your handling code here:
+        UserSession session = UserSession.getInstance();
+        String email = session.getEmail(); // Lấy email từ session
         Date selectedDate = dtpDate.getDate();
         if (selectedDate == null) {
             JOptionPane.showMessageDialog(this, "Please select a valid date!", "Noitfication", JOptionPane.WARNING_MESSAGE);
@@ -175,6 +182,8 @@ public class PanelAddUpdateSaving extends javax.swing.JPanel {
         String description = txtDescription.getText();
         String target = txtTargetAmount.getText();
         String current = txtCurrentAmount.getText();
+
+        Account account = accountService.getAccountFromSession(email);
 
         if (description.isEmpty() || target.isEmpty() || current.isEmpty()) {
             JOptionPane.showMessageDialog(parentDialog, "Please fill in all fields.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -205,7 +214,7 @@ public class PanelAddUpdateSaving extends javax.swing.JPanel {
         // Kiểm tra xem có đang cập nhật hay thêm mới
         if (selectedSavingId == -1) {
             // Thêm mới
-            savingService.addSaving(description, tmpTarget, tmpCurrent, date);
+            savingService.addSaving(description, tmpTarget, tmpCurrent, date, account);
             JOptionPane.showMessageDialog(this, "Added successfully!", "Notification", JOptionPane.INFORMATION_MESSAGE);
         } else {
             // Cập nhật

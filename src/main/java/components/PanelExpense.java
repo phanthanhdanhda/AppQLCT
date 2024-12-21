@@ -22,6 +22,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import models.Expense;
 import services.ExpenseService;
+import session.UserSession;
 import swing.ScrollBar;
 
 public class PanelExpense extends javax.swing.JPanel {
@@ -30,10 +31,13 @@ public class PanelExpense extends javax.swing.JPanel {
     private ExpenseService expenseService;
     private Long selectedExpenseId = Long.valueOf(-1);
     private int selectedRow = -1;
+    private String email;
 
     public PanelExpense() {
         initComponents();
         DisableButton();
+        UserSession session = UserSession.getInstance();
+        email = session.getEmail(); // Lấy email từ session
         this.expenseService = new ExpenseService();
         tableModel = (DefaultTableModel) table.getModel();
         // Loại bỏ cột ID khỏi JTable hiển thị
@@ -114,7 +118,7 @@ public class PanelExpense extends javax.swing.JPanel {
         tableModel.setRowCount(0);
 
         // Lấy danh sách expenses từ cơ sở dữ liệu
-        List<Expense> expenses = expenseService.getAllExpenses();
+        List<Expense> expenses = expenseService.getAllExpenses(email);
 
         // Duyệt qua danh sách và thêm vào table model
         int stt = 1; // Bắt đầu từ 1
@@ -124,8 +128,7 @@ public class PanelExpense extends javax.swing.JPanel {
                 stt++, // Hiển thị STT
                 expense.getDescription(),
                 expense.getMoney(),
-                expense.getOccurringDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                "Food"
+                expense.getOccurringDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
             });
         }
     }

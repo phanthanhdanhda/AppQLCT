@@ -22,6 +22,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import models.Receipt;
 import services.ReceiptService;
+import session.UserSession;
 import swing.ScrollBar;
 
 public class PanelReceipt extends javax.swing.JPanel {
@@ -30,10 +31,13 @@ public class PanelReceipt extends javax.swing.JPanel {
     private ReceiptService receiptService;
     private Long selectedReceiptId = Long.valueOf(-1);
     private int selectedRow = -1;
+    private String email;
     
     public PanelReceipt() {
         initComponents();
         DisableButton();
+        UserSession session = UserSession.getInstance();
+        email = session.getEmail(); // Lấy email từ session
         this.receiptService = new ReceiptService();
         tableModel = (DefaultTableModel) table.getModel();
         // Loại bỏ cột ID khỏi JTable hiển thị
@@ -114,7 +118,7 @@ public class PanelReceipt extends javax.swing.JPanel {
         tableModel.setRowCount(0);
 
         // Lấy danh sách receipts từ cơ sở dữ liệu
-        List<Receipt> receipts = receiptService.getAllReceipts();
+        List<Receipt> receipts = receiptService.getAllReceipts(email);
 
         // Duyệt qua danh sách và thêm vào table model
         int stt = 1; // Bắt đầu từ 1
@@ -124,8 +128,7 @@ public class PanelReceipt extends javax.swing.JPanel {
                 stt++, // Hiển thị STT
                 receipt.getDescription(),
                 receipt.getMoney(),
-                receipt.getOccurringDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                "Food"
+                receipt.getOccurringDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
             });
         }
     }

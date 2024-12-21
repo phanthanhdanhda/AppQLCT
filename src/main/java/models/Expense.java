@@ -24,14 +24,20 @@ public class Expense {
     @Column(name = "created_date")
     private LocalDateTime createdDate;
 
+    // Liên kết với Account (một tài khoản có thể có nhiều chi tiêu)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_email", referencedColumnName = "email") // Trường khóa ngoại liên kết với Account
+    private Account account;
+
     public Expense() {
     }
 
-    public Expense(Double money, String description, LocalDate occurringDate) {
+    public Expense(Double money, String description, LocalDate occurringDate, Account account) {
         this.money = money;
         this.description = description;
         this.occurringDate = occurringDate;
         this.createdDate = LocalDateTime.now();  // Thời gian hiện tại
+        this.account = account;
     }
 
     // Getter và Setter
@@ -73,5 +79,13 @@ public class Expense {
 
     public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
     }
 }

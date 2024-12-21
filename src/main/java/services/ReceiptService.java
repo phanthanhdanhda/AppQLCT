@@ -6,18 +6,19 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
+import models.Account;
 import models.Receipt;
 import utils.CustomEntityManager;
 
 @Service
 public class ReceiptService {
-    public void addReceipt(Double money, String description, LocalDate occurringDate) {
+    public void addReceipt(Double money, String description, LocalDate occurringDate, Account account) {
         EntityManager em = CustomEntityManager.getEntityManager();
         EntityTransaction transaction = em.getTransaction();
 
         try {
             transaction.begin();
-            Receipt receipt = new Receipt(money, description, occurringDate);
+            Receipt receipt = new Receipt(money, description, occurringDate, account);
             em.persist(receipt);  // Lưu vào cơ sở dữ liệu
             transaction.commit();
         } catch (RuntimeException e) {
@@ -30,14 +31,16 @@ public class ReceiptService {
         }
     }
 
-    public List<Receipt> getAllReceipts() {
+    public List<Receipt> getAllReceipts(String email) {
         EntityManager em = CustomEntityManager.getEntityManager();
 
         try {
             // Sử dụng JPQL để lấy tất cả các Expense từ cơ sở dữ liệu
-            String jpql = "SELECT r FROM Receipt r ORDER BY r.occurringDate ASC";
+            String jpql = "SELECT r FROM Receipt r WHERE r.account.email = :email ORDER BY r.occurringDate ASC";
             Query query = em.createQuery(jpql);
 
+            // Gán giá trị cho tham số 'email'
+            query.setParameter("email", email); // Gán giá trị email vào truy vấn
             // Thực thi truy vấn và lấy kết quả
             List<Receipt> receipts = query.getResultList();
             return receipts;

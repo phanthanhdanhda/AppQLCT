@@ -9,7 +9,10 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
+import models.Account;
+import services.AccountService;
 import services.ReceiptService;
+import session.UserSession;
 
 public class PanelAddUpdateReceipt extends javax.swing.JPanel {
 
@@ -17,11 +20,13 @@ public class PanelAddUpdateReceipt extends javax.swing.JPanel {
     private Object[] expenseData;
     private TableModel tableModel;
     private ReceiptService expenseService;
+    private AccountService accountService;
     private Long selectedReceiptId = Long.valueOf(-1);
 
     public PanelAddUpdateReceipt(String title, JDialog _parentDialog, Object[] _expenseData, TableModel _tableModel) throws ParseException {
         initComponents();
         this.expenseService = new ReceiptService();
+        accountService = new AccountService();
         this.parentDialog = _parentDialog;
         lbLabel.setText(title);
         this.setVisible(true);
@@ -154,6 +159,8 @@ public class PanelAddUpdateReceipt extends javax.swing.JPanel {
 
     private void btnConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmActionPerformed
         // TODO add your handling code here:
+        UserSession session = UserSession.getInstance();
+        String email = session.getEmail(); // Lấy email từ session
         Date selectedDate = dtpDate.getDate();
         if (selectedDate == null) {
             JOptionPane.showMessageDialog(this, "Please select a valid date!", "Noitfication", JOptionPane.WARNING_MESSAGE);
@@ -163,6 +170,8 @@ public class PanelAddUpdateReceipt extends javax.swing.JPanel {
         String description = txtDescription.getText();
         String amount = txtAmount.getText();
 
+        Account account = accountService.getAccountFromSession(email);
+        
         if (description.isEmpty() || amount.isEmpty()) {
             JOptionPane.showMessageDialog(parentDialog, "Please fill in all fields!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
@@ -186,7 +195,7 @@ public class PanelAddUpdateReceipt extends javax.swing.JPanel {
         // Kiểm tra xem có đang cập nhật hay thêm mới
         if (selectedReceiptId == -1) {
             // Thêm mới
-            expenseService.addReceipt(money, description, date);
+            expenseService.addReceipt(money, description, date, account);
             JOptionPane.showMessageDialog(this, "Added successfully!", "Noitfication", JOptionPane.INFORMATION_MESSAGE);
         } else {
             // Cập nhật

@@ -5,17 +5,18 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
+import models.Account;
 import models.Saving;
 import utils.CustomEntityManager;
 
 public class SavingService {
-    public void addSaving(String description, Double targetAmount, Double currentAmount, LocalDate targetDate) {
+    public void addSaving(String description, Double targetAmount, Double currentAmount, LocalDate targetDate, Account account) {
         EntityManager em = CustomEntityManager.getEntityManager();
         EntityTransaction transaction = em.getTransaction();
 
         try {
             transaction.begin();
-            Saving saving = new Saving(description, targetAmount, currentAmount, targetDate);
+            Saving saving = new Saving(description, targetAmount, currentAmount, targetDate, account);
             em.persist(saving);  // Lưu vào cơ sở dữ liệu
             transaction.commit();
         } catch (RuntimeException e) {
@@ -28,14 +29,17 @@ public class SavingService {
         }
     }
 
-    public List<Saving> getAllSavings() {
+    public List<Saving> getAllSavings(String email) {
         EntityManager em = CustomEntityManager.getEntityManager();
 
         try {
             // Sử dụng JPQL để lấy tất cả các Saving từ cơ sở dữ liệu
-            String jpql = "SELECT s FROM Saving s ORDER BY s.targetDate ASC";
+            String jpql = "SELECT s FROM Saving s WHERE s.account.email = :email ORDER BY s.targetDate ASC";
             Query query = em.createQuery(jpql);
 
+            // Gán giá trị cho tham số 'email'
+            query.setParameter("email", email); // Gán giá trị email vào truy vấn
+            
             // Thực thi truy vấn và lấy kết quả
             List<Saving> savings = query.getResultList();
             return savings;

@@ -24,14 +24,20 @@ public class Receipt {
     @Column(name = "created_date")
     private LocalDateTime createdDate;
 
+    // Liên kết với Account (một tài khoản có thể có nhiều chi tiêu)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_email", referencedColumnName = "email") // Trường khóa ngoại liên kết với Account
+    private Account account;
+
     public Receipt() {
     }
 
-    public Receipt(Double money, String description, LocalDate occurringDate) {
+    public Receipt(Double money, String description, LocalDate occurringDate, Account account) {
         this.money = money;
         this.description = description;
         this.occurringDate = occurringDate;
         this.createdDate = LocalDateTime.now();  // Thời gian hiện tại
+        this.account = account;
     }
 
     // Getter và Setter
@@ -73,5 +79,13 @@ public class Receipt {
 
     public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
     }
 }

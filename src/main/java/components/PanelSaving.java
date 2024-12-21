@@ -22,6 +22,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import models.Saving;
 import services.SavingService;
+import session.UserSession;
 import swing.ScrollBar;
 
 public class PanelSaving extends javax.swing.JPanel {
@@ -30,10 +31,13 @@ public class PanelSaving extends javax.swing.JPanel {
     private SavingService savingService;
     private Long selectedSavingId = Long.valueOf(-1);
     private int selectedRow = -1;
+    private String email;
 
     public PanelSaving() {
         initComponents();
         DisableButton();
+        UserSession session = UserSession.getInstance();
+        email = session.getEmail(); // Lấy email từ session
         this.savingService = new SavingService();
         tableModel = new DefaultTableModel(new Object[]{"ID","STT", "Description", "Target", "Current", "Date"}, 0);
         table.setModel(tableModel);
@@ -115,7 +119,7 @@ public class PanelSaving extends javax.swing.JPanel {
         tableModel.setRowCount(0);
 
         // Lấy danh sách savings từ cơ sở dữ liệu
-        List<Saving> savings = savingService.getAllSavings();
+        List<Saving> savings = savingService.getAllSavings(email);
 
         // Duyệt qua danh sách và thêm vào table model
         int stt = 1; // Bắt đầu từ 1
